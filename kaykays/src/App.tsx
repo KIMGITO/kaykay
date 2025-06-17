@@ -6,6 +6,7 @@ import {
   Truck,
   Heart,
   Baby,
+  MapPinned,
 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import {
@@ -30,22 +31,25 @@ export default function LoginPage() {
   );
 
   const dairyProducts = [
-    { name: "Fresh Milk", icon: <Milk className="text-blue-50" size={40} /> },
+    {
+      name: "🥛 Fresh, creamy, and pure — straight from the farm.",
+      icon: "/images/milk.png",
+    },
     {
       name: "Organic Yogurt",
-      icon: <Baby className="text-blue-50" size={40} />,
+      icon: "/images/kaykay.png",
     },
     {
       name: "Artisan Cheese",
-      icon: <Factory className="text-blue-50" size={40} />,
+      icon: "/images/milk.png",
     },
     {
       name: "Home Delivery",
-      icon: <Truck className="text-blue-50" size={40} />,
+      icon: "/images/milk.png",
     },
     {
       name: "Healthy Options",
-      icon: <Heart className="text-blue-50" size={40} />,
+      icon: "/images/milk.png",
     },
   ];
 
@@ -59,8 +63,8 @@ export default function LoginPage() {
       >
         <defs>
           <linearGradient id="milkGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="#fd78ff" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#db0f79" stopOpacity="0.8" />
           </linearGradient>
           <pattern
             id="milkPattern"
@@ -85,9 +89,9 @@ export default function LoginPage() {
       </svg>
 
       {/* Header */}
-      <header className="relative z-10 container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+      <header className="  container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center  relative">
         <div className="flex items-center justify-between w-full md:w-auto">
-          <div className="text-blue-900">
+          <div className="hidden md:block text-blue-900">
             <div className="flex items-center gap-2">
               {/* Image */}
               {/* <img
@@ -100,15 +104,32 @@ export default function LoginPage() {
               Farm Fresh Milk & Products
             </p>
           </div>
-          <Button
-            size={"sm"}
-            className="rounded-full bg-white text-blue-800 md:hidden"
-          >
-            <ShoppingBasketIcon size={24} />
-          </Button>
+
+          <div className="md:hidden text-blue-900">
+            <div className="flex items-center gap-2">
+              {/* Image */}
+              {/* <img
+                src="/images/kaykay.png"
+                alt="KayKay's Dairy Logo"
+              /> */}
+              <h1 className="text-2xl font-bold">KayKay's</h1>
+            </div>
+          </div>
+
+          <div className="z-15">
+            <Button variant={"ghost"} className="px-4 ">
+              <MapPinned color="blue" size={30} className="animate-bounce" />
+            </Button>
+            <Button
+              size={"sm"}
+              className="rounded-full bg-white text-blue-800 md:hidden"
+            >
+              <ShoppingBasketIcon size={24} />
+            </Button>
+          </div>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6 mt-4 md:mt-0">
+        <nav className="hidden md:flex items-center gap-4 mt-4 md:mt-0">
           {["Home", "Products", "About", "Delivery", "Contact"].map((item) => (
             <HoverCard key={item}>
               <HoverCardTrigger>
@@ -137,9 +158,9 @@ export default function LoginPage() {
       </header>
 
       {/* Horizontal Main Content */}
-      <main className="relative z-10 container mx-auto px-4 py-8 flex flex-col-reverse lg:flex-row items-center justify-between gap-8">
+      <main className="relative z-10 container mx-auto px-0 pb-20 pt-8 flex flex-col-reverse lg:flex-row items-center justify-between gap-6">
         {/* Left Content */}
-        <div className="w-full lg:w-1/2">
+        <div className="w-full lg:w-1/2 items-center">
           <Card className=" backdrop-blur-sm border-blue-100 shadow-0">
             <CardContent className="p-8">
               <div className="flex items-center justify-between">
@@ -165,36 +186,18 @@ export default function LoginPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Product Highlights */}
-          {/* <div className="mt-8 grid grid-cols-2 sm:grid-cols-5 gap-4">
-            {dairyProducts.map((product, index) => (
-              <Card
-                key={index}
-                className="bg-blue-600/90 border-blue-500 text-center"
-              >
-                <CardContent className="p-4 flex flex-col items-center">
-                  <div className="p-3 bg-blue-700 rounded-full mb-2">
-                    {product.icon}
-                  </div>
-                  <p className="text-blue-50 font-medium">{product.name}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
         </div>
 
         {/* Right Carousel */}
-        <div className="w-full lg:w-1/2 mt-8 lg:mt-0">
+        <div className="w-full lg:w-1/2  lg:mt-0">
           <Carousel
-            plugins={[plugin.current]}
+            plugins={[Autoplay({ delay: 5000 })]}
+            opts={{ loop: true }}
             className="w-full"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
           >
             <CarouselContent>
               {[
-                "/dairy-farm.jpg",
+                "/images/milk.png",
                 "/milk-bottles.jpg",
                 "/cheese-selection.jpg",
                 "/yogurt-parfait.jpg",
@@ -202,16 +205,20 @@ export default function LoginPage() {
               ].map((img, index) => (
                 <CarouselItem key={index}>
                   <div className="p-2">
-                    <Card className="border-0 shadow-xl overflow-hidden">
-                      <CardContent className="p-0 aspect-video  flex items-center justify-center">
-                        {/* Replace with actual images */}
-                        <div className="w-full h-full flex items-center justify-center ">
-                          <span className="text-2xl font-semibold text-blue-900">
-                            {dairyProducts[index].name}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <CardContent className="p-0 relative aspect-auto">
+                      <img
+                        src={dairyProducts[index].icon}
+                        alt="KayKay's Dairy Logo"
+                        className="w-full h-auto object-cover"
+                      />
+
+                      {/* Overlay Name at Bottom Right */}
+                      <div className="absolute bottom-0 bg-blue-500/10 px-3 py-1 rounded-tl-md">
+                        <span className="text-md font-semibold ">
+                          {dairyProducts[index].name}
+                        </span>
+                      </div>
+                    </CardContent>
                   </div>
                 </CarouselItem>
               ))}
@@ -222,198 +229,320 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {/* Testimonials Section */}
-      <section className="relative z-10  py-16">
+      {/* Our Products Section */}
+      <section className="relative z-10 py-20 bg-gradient-to-tr bg-red-300 to-blue-950">
         <div className="container mx-auto px-4">
-          
-          {/* Testimonials Section */}
-          <section className="relative z-10 bg-amber-600 py-16">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">
-                What Our Customers Say
-              </h2>
+          <h2 className="text-3xl font-bold text-center text-white mb-12">
+            Our Dairy Products & Services
+          </h2>
 
-              <Carousel
-                plugins={[plugin.current]}
-                className="w-full max-w-4xl mx-auto"
-                onMouseEnter={plugin.current.stop}
-                onMouseLeave={plugin.current.reset}
-              >
-                <CarouselContent className="-ml-1">
-                  {/* Testimonial 1 */}
-                  <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-2">
-                      <Card className="border-blue-100 shadow-sm carousel-item">
-                        <CardContent className="p-6">
-                          <div className="flex items-center mb-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                              <UserCircle2
-                                className="text-blue-700"
-                                size={28}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-blue-900">
-                                Sarah Johnson
-                              </h4>
-                              <div className="flex text-yellow-400">
-                                {[...Array(5)].map((_, i) => (
-                                  <span key={i}>★</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-blue-800 italic">
-                            "KayKay's milk is the freshest I've ever tasted! My
-                            family won't drink any other brand now. The home
-                            delivery is so convenient too."
-                          </p>
-                          <div className="mt-4 flex items-center text-blue-600">
-                            <Milk size={18} className="mr-1" />
-                            <span className="text-sm">
-                              Regular Customer for 2 years
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-
-                  {/* Testimonial 2 */}
-                  <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-2">
-                      <Card className="border-blue-100 shadow-sm carousel-item">
-                        <CardContent className="p-6">
-                          <div className="flex items-center mb-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                              <UserCircle2
-                                className="text-blue-700"
-                                size={28}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-blue-900">
-                                Michael Chen
-                              </h4>
-                              <div className="flex text-yellow-400">
-                                {[...Array(5)].map((_, i) => (
-                                  <span key={i}>★</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-blue-800 italic">
-                            "As a coffee shop owner, quality milk is essential.
-                            KayKay's dairy products have transformed our lattes
-                            - customers can taste the difference!"
-                          </p>
-                          <div className="mt-4 flex items-center text-blue-600">
-                            <Milk size={18} className="mr-1" />
-                            <span className="text-sm">Business Customer</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-
-                  {/* Testimonial 3 */}
-                  <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-2">
-                      <Card className="border-blue-100 shadow-sm carousel-item">
-                        <CardContent className="p-6">
-                          <div className="flex items-center mb-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                              <UserCircle2
-                                className="text-blue-700"
-                                size={28}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-blue-900">
-                                The Ramirez Family
-                              </h4>
-                              <div className="flex text-yellow-400">
-                                {[...Array(5)].map((_, i) => (
-                                  <span key={i}>★</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-blue-800 italic">
-                            "We love the variety of dairy products. The kids
-                            enjoy the flavored milks while we appreciate the
-                            organic options. Truly a family favorite!"
-                          </p>
-                          <div className="mt-4 flex items-center text-blue-600">
-                            <Milk size={18} className="mr-1" />
-                            <span className="text-sm">
-                              Subscribers for 1 year
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-
-                  {/* Testimonial 4 */}
-                  <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
-                    <div className="p-2">
-                      <Card className="border-blue-100 shadow-sm carousel-item">
-                        <CardContent className="p-6">
-                          <div className="flex items-center mb-4">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                              <UserCircle2
-                                className="text-blue-700"
-                                size={28}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-blue-900">
-                                Emma Wilson
-                              </h4>
-                              <div className="flex text-yellow-400">
-                                {[...Array(5)].map((_, i) => (
-                                  <span key={i}>★</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-blue-800 italic">
-                            "The organic yogurt is incredible! I've tried many
-                            brands, but none compare to KayKay's in terms of
-                            taste and texture."
-                          </p>
-                          <div className="mt-4 flex items-center text-blue-600">
-                            <Milk size={18} className="mr-1" />
-                            <span className="text-sm">Yogurt Lover</span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                </CarouselContent>
-
-                <div className="mt-8 flex justify-center gap-4">
-                  <CarouselPrevious className="relative left-0 top-0 translate-y-0 bg-white/80 hover:bg-white text-blue-900 border-blue-200" />
-                  <CarouselNext className="relative right-0 top-0 translate-y-0 bg-white/80 hover:bg-white text-blue-900 border-blue-200" />
+          <Carousel
+            plugins={[Autoplay({ delay: 3000 })]}
+            opts={{ loop: true }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-1">
+              {/* Product 1 - Fresh Milk */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-50 shadow-sm hover:shadow-md transition-all">
+                    <CardContent className="p-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-blue-400 flex items-center justify-center mb-4">
+                        <Milk className="text-violet-600" size={48} />
+                      </div>
+                      <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                        Fresh Milk
+                      </h3>
+                      <p className="text-blue-800 text-center mb-4">
+                        Pasteurized whole milk from grass-fed cows, delivered
+                        fresh daily.
+                      </p>
+                      <Button className="bg-blue-700 hover:bg-blue-800 text-white">
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
-              </Carousel>
+              </CarouselItem>
 
-              
+              {/* Product 2 - Organic Yogurt */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-50 shadow-sm hover:shadow-md transition-all">
+                    <CardContent className="p-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center mb-4">
+                        {/* <Cow className="text-blue-700" size={48} /> */}
+                      </div>
+                      <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                        Organic Yogurt
+                      </h3>
+                      <p className="text-blue-800 text-center mb-4">
+                        Creamy probiotic yogurt with live cultures, available in
+                        multiple flavors.
+                      </p>
+                      <Button className="bg-blue-700 hover:bg-blue-800 text-white">
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Product 3 - Artisan Cheese */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-50 shadow-sm hover:shadow-md transition-all">
+                    <CardContent className="p-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-pink-700 flex items-center justify-center mb-4">
+                        <Factory className="text-pink-100" size={48} />
+                      </div>
+                      <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                        Artisan Cheese
+                      </h3>
+                      <p className="text-blue-800 text-center mb-4">
+                        Handcrafted cheeses aged to perfection in our dairy
+                        cellars.
+                      </p>
+                      <Button className="bg-blue-700 hover:bg-blue-800 text-white">
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Product 4 - Butter */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-50 shadow-sm hover:shadow-md transition-all">
+                    <CardContent className="p-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                        <Heart className="text-red-700" size={48} />
+                      </div>
+                      <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                        Farm Mala
+                      </h3>
+                      <p className="text-blue-800 text-center mb-4">
+                        Rich, creamy mala from.
+                      </p>
+                      <Button className="bg-blue-700 hover:bg-blue-800 text-white">
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Product 5 - Ice Cream */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-50 shadow-sm hover:shadow-md transition-all">
+                    <CardContent className="p-6 flex flex-col items-center">
+                      <div className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                        <Truck className="text-pink-600" size={48} />
+                      </div>
+                      <h3 className="text-xl font-semibold text-blue-900 mb-2">
+                        Milk Delivery
+                      </h3>
+                      <p className="text-blue-800 text-center mb-4">
+                        Small-batch ice cream made with real milk and natural
+                        ingredients.
+                      </p>
+                      <Button className="bg-blue-700 hover:bg-blue-800 text-white">
+                        View Details
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+
+            {/* Custom navigation positioned at bottom center */}
+            <div className="mt-8 flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((_, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  className="w-2 h-2 p-0 rounded-full border-blue-300"
+                  onClick={() => {}}
+                />
+              ))}
             </div>
-          </section>
+          </Carousel>
+        </div>
+      </section>
 
-          {/* Footer */}
+      {/* Testimonials Section */}
+      <section className="relative z-10 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-blue-900 mb-12">
+            What Our Customers Say
+          </h2>
 
-          
+          <Carousel
+            plugins={[plugin.current]}
+            className="w-full max-w-4xl mx-auto"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
+          >
+            <CarouselContent className="-ml-1">
+              {/* Testimonial 1 */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-100 shadow-sm carousel-item">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                          {/* <UserCircle2 className="text-blue-700" size={28} /> */}
+                          <img src="/images/image.png" className="rounded-full"  />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-blue-900">
+                            Sarah Johnson
+                          </h4>
+                          <span className=" text-yellow-400">
+                            {[...Array(4)].map((_, i) => (
+                              <span key={i}>★</span>
+                            ))}
+                          </span>
+                          <span className="text-gray-400">★</span>
+                        </div>
+                      </div>
+                      <p className="text-blue-800 italic">
+                        "KayKay's milk is the freshest I've ever tasted! My
+                        family won't drink any other brand now. The home
+                        delivery is so convenient too."
+                      </p>
+                      <div className="mt-4 flex items-center text-blue-600">
+                        <Milk size={18} className="mr-1" />
+                        <span className="text-sm">
+                          Regular Customer for 2 years
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Testimonial 2 */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-100 shadow-sm carousel-item">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                          <UserCircle2 className="text-blue-700" size={28} />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-blue-900">
+                            Michael Chen
+                          </h4>
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i}>★</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-blue-800 italic">
+                        "As a coffee shop owner, quality milk is essential.
+                        KayKay's dairy products have transformed our lattes -
+                        customers can taste the difference!"
+                      </p>
+                      <div className="mt-4 flex items-center text-blue-600">
+                        <Milk size={18} className="mr-1" />
+                        <span className="text-sm">Business Customer</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Testimonial 3 */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-100 shadow-sm carousel-item">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                          <UserCircle2 className="text-blue-700" size={28} />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-blue-900">
+                            The Ramirez Family
+                          </h4>
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i}>★</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-blue-800 italic">
+                        "We love the variety of dairy products. The kids enjoy
+                        the flavored milks while we appreciate the organic
+                        options. Truly a family favorite!"
+                      </p>
+                      <div className="mt-4 flex items-center text-blue-600">
+                        <Milk size={18} className="mr-1" />
+                        <span className="text-sm">Subscribers for 1 year</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+
+              {/* Testimonial 4 */}
+              <CarouselItem className="pl-1 basis-full sm:basis-1/2 lg:basis-1/3">
+                <div className="p-2">
+                  <Card className="border-blue-100 shadow-sm carousel-item">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                          <UserCircle2 className="text-blue-700" size={28} />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-blue-900">
+                            Emma Wilson
+                          </h4>
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i}>★</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-blue-800 italic">
+                        "The organic yogurt is incredible! I've tried many
+                        brands, but none compare to KayKay's in terms of taste
+                        and texture."
+                      </p>
+                      <div className="mt-4 flex items-center text-blue-600">
+                        <Milk size={18} className="mr-1" />
+                        <span className="text-sm">Yogurt Lover</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            </CarouselContent>
+
+            <div className="mt-8 flex justify-center gap-4">
+              <CarouselPrevious className="relative left-0 top-0 translate-y-0 bg-white/80 hover:bg-white text-blue-900 border-blue-200" />
+              <CarouselNext className="relative right-0 top-0 translate-y-0 bg-white/80 hover:bg-white text-blue-900 border-blue-200" />
+            </div>
+          </Carousel>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-amber-800/90 text-blue-50 py-6 mt-12">
+
+      {/* Footer */}
+      <footer className="relative z-10 bg-amber-800/90 text-blue-50 py-6">
         <div className="container mx-auto px-4 text-center">
           <p>© 2025 KayKay's Dairy. All rights reserved.</p>
-          <p className="mt-2 text-blue-200">Farm to Table - Since 1985</p>
+          <p className="mt-2 text-blue-200">Farm to Table - Since 2020</p>
         </div>
       </footer>
     </div>

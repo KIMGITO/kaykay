@@ -23,8 +23,8 @@ export default function Add({ initialData }: EditProps) {
      return (
          <AppLayout>
              <Head title="Add Stock" />
-             <div className="flex h-full  justify-center items-center w-full flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                 <ProductForm  initialData={initialData} />
+             <div className=" flex-1 flex-col justify-start gap-4 overflow-x-auto rounded-xl p-4">
+                 <ProductForm initialData={initialData} />
              </div>
          </AppLayout>
      );

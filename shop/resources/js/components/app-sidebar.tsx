@@ -46,7 +46,7 @@ const data = {
                 },
                 {
                     title: 'Sales',
-                    url: '/sales',
+                    url: '/sale',
                     icon: DollarSignIcon,
                 },
                 {
@@ -73,7 +73,7 @@ const data = {
                 },
                 {
                     title: 'Stocks',
-                    url: '/stocks',
+                    url: '/stock',
                     icon: Blocks,
                 },
                 {

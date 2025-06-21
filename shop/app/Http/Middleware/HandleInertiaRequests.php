@@ -46,10 +46,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'undo_product_id'=> fn(): mixed=>$request->session()->get('undo_product_id'),
+            'flash'  => fn() =>  [
+                'error' =>  session('error'),
+                'undo_id'=>  session('undo_id') ,
+                'success' => session('success'),
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),

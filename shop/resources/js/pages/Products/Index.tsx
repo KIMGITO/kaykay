@@ -32,52 +32,36 @@ export default function Index({ products }: { products: Product[] }) {
     };
 
     const handleDelete = (id: number) => {
-        router.delete(route('product.destroy', id));
+        // router.delete(route('products.destroy', id));
     };
 
-    const { props } = usePage<{ flash?: { success?: string; undo_product_id: string } }>();
+    const { props } = usePage<{ flash?: { success?: string; undo_id: string } }>();
 
-    const product_id = props.flash?.undo_product_id;
-    const message = props.flash?.success ;
+    const undoid = props.flash?.undo_id;
+    const [message, setMessage] = useState(props.flash?.success || '');
 
-    useEffect(() => {
-        if (message  && product_id != null) {
-            toast.success('Success', {
-                description: message,
-                dismissible: false,
-                icon: <Trash2 className="animate-bounce" />,
+   useEffect(() => {
+       console.log('Current values:', { message, undoid }); // Debug log
 
-                action: {
-                    label: 'Undo',
-                    onClick: () => {
-                        router.patch(route('product.undo', product_id));
-                        console.log(product_id);
-                    },
-                },
-                duration: 3000,
-            });
+       if (message && typeof message === 'string' && message.trim() !== '') {
+           console.log('Undo product value:', undoid); // Debug undoid
 
-            router.visit(route('product.index'), {
-                preserveState: true,
-                preserveScroll: true,
-                only: ['products'],
-            });
-        } else  {
-            {
-                toast.success('Success', {
-                    description: message,
-
-                    duration: 3000,
-                });
-                router.visit(route('product.index'), {
-                    preserveState: true,
-                    preserveScroll: true,
-                    only: ['products'],
-                });
-            }
-        }
-    }, [message]);
-
+           toast.success('Success', {
+               description: message,
+               ...(undoid != null && {
+                   // Conditional spread
+                   icon: <Trash2 className="animate-bounce" size={30} />,
+                   action: {
+                       label: 'Undo',
+                       onClick: () => {
+                           router.patch(route('product.undo', undoid));
+                       },
+                   },
+               }),
+               duration: 3000,
+           });
+       }
+   }, [message, undoid]); 
     return (
         <AppLayout>
             <Head title="Product List" />
@@ -109,7 +93,7 @@ export default function Index({ products }: { products: Product[] }) {
                         </thead>
                         <tbody>
                             {products.map((product) => (
-                                <tr key={product.id} className="border-t transition hover:bg-accent">
+                                <tr key={product.id} className="border-t align-middle transition hover:bg-accent">
                                     <td className="px-4 py-2">{product.name}</td>
                                     <td className="px-4 py-2">{product.unit}</td>
                                     <td className="px-4 py-2">Ksh {product.price_per_unit}</td>
@@ -118,7 +102,7 @@ export default function Index({ products }: { products: Product[] }) {
                                             {product.is_active ? 'Available' : 'Not Available'}
                                         </Badge>
                                     </td>
-                                    <td className="text-center">
+                                    <td className="">
                                         <Button
                                             size="sm"
                                             variant="ghost"

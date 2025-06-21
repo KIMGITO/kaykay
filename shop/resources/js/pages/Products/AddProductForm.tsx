@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import AuthLayout from '@/layouts/auth-layout';
 
 type ProductData = {
     name: string;
@@ -41,56 +42,66 @@ export default function ProductForm({ initialData }: { initialData?: ProductData
     };
 
     return (
-        <form onSubmit={submit} className="w-full max-w-xl space-y-6">
-            <div>
-                <Input
-                    id="name"
-                    type="text"
-                    placeholder="e.g. Milk"
-                    value={data.name}
-                    onChange={(e) => setData('name', e.target.value)}
-                    disabled={processing}
-                />
-                <InputError message={errors.name} />
-            </div>
+        <AuthLayout
+            title={isEditing ? 'Edit Product' : 'Add Product'}
+            description={isEditing ? 'Update existing product record' : 'Record received product below.'}
+        >
+            <form onSubmit={submit} className="w-full max-w-xl space-y-6">
+                <div>
+                    <Input
+                        id="name"
+                        type="text"
+                        placeholder="e.g. Milk"
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        disabled={processing}
+                    />
+                    <InputError message={errors.name} />
+                </div>
 
-            <div>
-                <Label htmlFor="unit">Unit</Label>
-                <Input
-                    id="unit"
-                    type="text"
-                    placeholder="e.g. litre"
-                    value={data.unit}
-                    onChange={(e) => setData('unit', e.target.value)}
-                    disabled={processing}
-                />
-                <InputError message={errors.unit} />
-            </div>
+                <div>
+                    <Label htmlFor="unit">Unit</Label>
+                    <Input
+                        id="unit"
+                        type="text"
+                        placeholder="e.g. litre"
+                        value={data.unit}
+                        onChange={(e) => setData('unit', e.target.value)}
+                        disabled={processing}
+                    />
+                    <InputError message={errors.unit} />
+                </div>
 
-            <div>
-                <Label htmlFor="price_per_unit">Price per Unit</Label>
-                <Input
-                    id="price_per_unit"
-                    type="number"
-                    step="0.01"
-                    placeholder="e.g. 50"
-                    value={data.price_per_unit}
-                    onChange={(e) => setData('price_per_unit', parseFloat(e.target.value))}
-                    disabled={processing}
-                />
-                <InputError message={errors.price_per_unit} />
-            </div>
+                <div>
+                    <Label htmlFor="price_per_unit">Price per Unit</Label>
+                    <Input
+                        id="price_per_unit"
+                        type="number"
+                        step="0.01"
+                        placeholder="e.g. 50"
+                        value={data.price_per_unit}
+                        onChange={(e) => setData('price_per_unit', parseFloat(e.target.value))}
+                        disabled={processing}
+                    />
+                    <InputError message={errors.price_per_unit} />
+                </div>
 
-            <div className="flex items-center gap-2">
-                <Switch id="is_active" checked={data.is_active} onCheckedChange={(checked) => setData('is_active', checked)} disabled={processing} />
-                <Label htmlFor="is_active">Available for Sale</Label>
-            </div>
-            <InputError message={errors.is_active} />
+                <div className="flex items-center gap-2">
+                    <Switch
+                        id="is_active"
+                        checked={data.is_active}
+                        onCheckedChange={(checked) => setData('is_active', checked)}
+                        disabled={processing}
+                    />
+                    <Label htmlFor="is_active">Available for Sale</Label>
+                </div>
+                <InputError message={errors.is_active} />
 
-            <Button type="submit" disabled={processing} className="w-full">
-                {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing ? 'Update Product' : 'Add Product'}
-            </Button>
-        </form>
+                <Button type="submit" disabled={processing} className="w-full">
+                    {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                    {isEditing ? 'Update Product' : 'Add Product'}
+                </Button>
+            </form>
+        </AuthLayout>
     );
 }

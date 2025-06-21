@@ -1,12 +1,13 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AuthLayout from '@/layouts/auth-layout';
+import { toast, Toaster } from 'sonner';
 
 type StockFormData = {
     product_id: string;
@@ -19,10 +20,11 @@ export default function StockForm({
     products,
     initialData,
 }: {
-    products: { id: number; name: string }[];
+    products: { id: number; name: string , unit: string}[];
     initialData?: StockFormData & { id?: number };
 }) {
     const isEditing = Boolean(initialData?.id);
+    // const { toast } = useToast();
 
     const { data, setData, post, put, processing, errors, reset } = useForm<StockFormData>({
         product_id: initialData?.product_id ?? '',
@@ -34,9 +36,22 @@ export default function StockForm({
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         const action = isEditing
-            ? put(route('stocks.update', initialData?.id))
-            : post(route('stocks.store'), {
-                  onSuccess: () => reset(),
+            ? put(route('stock.update', initialData?.id))
+            : post(route('stock.store'), {
+                  onSuccess: () => {
+                      reset();
+                    //   toast({
+                    //       title: 'Success',
+                    //       description: isEditing ? 'Stock updated successfully' : 'Stock created successfully',
+                    //   });
+                  },
+                  onError: () => {
+                    //   toast({
+                    //       title: 'Error',
+                    //       description: 'There was an error processing your request',
+                    //       variant: 'destructive',
+                    //   });
+                  },
               });
     };
 
@@ -51,50 +66,46 @@ export default function StockForm({
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="product_id">Product</Label>
-                        <select
-                            id="product_id"
-                            required
+                        <Select
                             value={data.product_id}
-                            onChange={(e) => setData('product_id', e.target.value)}
+                            onValueChange={(value) => {
+                                setData('product_id', value);
+                            }}
                             disabled={processing}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
-                            <option value="">-- Select Product --</option>
-                            {products.map((product) => (
-                                <option key={product.id} value={product.id.toString()}>
-                                    {product.name}
-                                </option>
-                            ))}
-                        </select>
-                        <InputError message={errors.product_id} />
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a product" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {products.map((product) => (
+                                    <SelectItem key={product.id} value={product.id.toString()}>
+                                        {product.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.product_id && <p className="text-sm font-medium text-destructive">{errors.product_id}</p>}
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="quantity_received">Quantity (Litres)</Label>
+                        <Label htmlFor="quantity_received">
+                            Quantity ({products.find((p) => p.id.toString() === data.product_id)?.unit || 'Unit'}){' '}
+                        </Label>
                         <Input
                             id="quantity_received"
                             type="number"
-                            required
-                            min={1}
                             value={data.quantity_received}
                             onChange={(e) => setData('quantity_received', parseFloat(e.target.value))}
                             disabled={processing}
                             placeholder="e.g. 50"
                         />
-                        <InputError message={errors.quantity_received} />
+                        {errors.quantity_received && <p className="text-sm font-medium text-destructive">{errors.quantity_received}</p>}
                     </div>
 
                     <div className="grid gap-2">
                         <Label htmlFor="date">Date</Label>
-                        <Input
-                            id="date"
-                            type="date"
-                            required
-                            value={data.date}
-                            onChange={(e) => setData('date', e.target.value)}
-                            disabled={processing}
-                        />
-                        <InputError message={errors.date} />
+                        <Input id="date" type="date" value={data.date} onChange={(e) => setData('date', e.target.value)} disabled={processing} />
+                        {errors.date && <p className="text-sm font-medium text-destructive">{errors.date}</p>}
                     </div>
 
                     <div className="grid gap-2">
@@ -107,11 +118,11 @@ export default function StockForm({
                             disabled={processing}
                             placeholder="e.g. Farm A"
                         />
-                        <InputError message={errors.source} />
+                        {errors.source && <p className="text-sm font-medium text-destructive">{errors.source}</p>}
                     </div>
 
                     <Button type="submit" className="mt-2 w-full" disabled={processing}>
-                        {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                        {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {isEditing ? 'Update Stock' : 'Save Stock'}
                     </Button>
                 </div>

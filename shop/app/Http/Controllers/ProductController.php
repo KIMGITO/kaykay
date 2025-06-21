@@ -65,24 +65,19 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-
         $product->delete();
-        return back()->with('undo_product_id', $product->id)
-            ->with('success', 'Product deleted.');
 
-      
-
+        return redirect()->route('product.index')->with(['product' => 'Product deleted', 'undo_id' => $product->id]);
     }
 
     public function undo($id)
     {
-       
+
         $product = Product::withTrashed()->findOrFail($id);
         $product->restore();
 
 
-        return back()->with('success', 'Product restored.');
-     
+    return redirect()->route('product.index')->with('success', 'Product restored.');
     }
 
     // Optional: Toggle is_active or soft delete

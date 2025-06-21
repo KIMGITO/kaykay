@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->enum('method', ['cash', 'mpesa', 'credit']); // cash, mpesa, till, credit
             
-            $table->boolean('is_paid')->default(false);
+            $table->enum('payment_status',['paid','unpaid','partial']);
 
 
             $table->date('date');

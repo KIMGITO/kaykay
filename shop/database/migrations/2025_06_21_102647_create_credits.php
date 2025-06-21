@@ -11,21 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('credits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
-            $table->decimal('amount_paid', 10, 2);
-            $table->decimal('balance', 10, 2);
-            $table->enum('method', ['cash', 'mpesa']);
-            $table->string('reference')->nullable();
-            $table->dateTime('payment_date')->useCurrent();
+            $table->decimal('amount', 10, 2);
+            $table->dateTime('due_date');
+            $table->boolean('is_paid')->default(false);
             $table->timestamps();
 
             $table->index('sale_id');
-            $table->index('method');
-            $table->index('payment_date');
+            $table->index('due_date');
         });
+        
     }
 
     /**
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('credits');
     }
 };

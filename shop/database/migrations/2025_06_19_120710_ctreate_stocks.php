@@ -16,11 +16,13 @@ return new class extends Migration
             $table->foreignId('product_id') // singular
                 ->nullable()              // required for nullOnDelete
                 ->constrained('products') // points to the 'products' table
-                ->nullOnDelete();         // sets foreign key to NULL on delete
+                ->cascadeOnDelete();         // sets foreign key to NULL on delete
             $table->decimal('quantity_received', 10, 2);
+            $table->decimal('quantity_available', 10, 2);
             $table->date('date');
-            $table->string('source')->nullable()->default('4&8 daily farm'); // e.g. "Own Farm"
+            $table->string('source')->default('4&8 Daily Farm')->nullable(); // e.g. "Own Farm"
             $table->timestamps();
+            $table->softDeletes();
 
         });
     }

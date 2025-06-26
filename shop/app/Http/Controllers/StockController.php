@@ -92,18 +92,18 @@ class StockController extends Controller
 
     public function editQty($id)
     {
-        
+
         $stock = Stock::with('product')->find($id);
 
-        if (!$stock->product->is_updatable) {
-            return redirect()->route('stock.index')
-                ->with('error', 'Product quantity is not updatable. Consider adding new stock.');
+
+        if (!$stock->product->is_updaterble) {
+            return back()->with('error', 'Product quantity is not updatable. Consider adding new stock.');
         }
 
         return Inertia::render('Stock/Update', [
             'stock' => $stock,
-            'flash' => session('flash') // Pass any existing flash messages
-        ]);   }
+        ]);
+    }
 
 
 

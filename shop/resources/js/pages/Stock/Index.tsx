@@ -39,8 +39,8 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
 
     const { props } = usePage<{ flash?: { success?: string | null; error?: string | null } }>();
 
-    const [success, setSuccess] = useState(props.flash?.success);
-    const [error, setError] = useState(props.flash?.error);
+    const success =props.flash?.success;
+    const error = props.flash?.error;
 
     useEffect(() => {
         success &&
@@ -55,10 +55,6 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
                 duration: 3000,
             });
         
-        const timer = setTimeout(() => {
-            setSuccess(null);
-            setError(null);
-        })
     }, [success, error]); // Include undo_product in dependencies
 
     return (

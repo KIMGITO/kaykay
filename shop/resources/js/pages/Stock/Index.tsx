@@ -1,6 +1,6 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Pencil, Plus, Trash2, Upload } from 'lucide-react';
-import {  useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 
 import {
@@ -37,37 +37,29 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
         router.delete(route('stock.destroy', id));
     };
 
-    const { props } = usePage<{ flash?: { success?: string; undo_id?: string } }>();
+    const { props } = usePage<{ flash?: { success?: string | null; error?: string | null } }>();
 
-    const undo_product = props.flash?.undo_id;
-
-    const [message, setMessage] = useState(props.flash?.success || '');
+    const [success, setSuccess] = useState(props.flash?.success);
+    const [error, setError] = useState(props.flash?.error);
 
     useEffect(() => {
-        console.log('Current values:', { message, undo_product }); // Debug log
-
-        if (message && typeof message === 'string' && message.trim() !== '') {
-            console.log('Undo product value:', undo_product); // Debug undo_product
-
+        success &&
             toast.success('Success', {
-                description: message,
-                ...(undo_product != null && {
-                    // Conditional spread
-                    icon: <Trash2 className="animate-bounce" size={30} />,
-                    action: {
-                        label: 'Undo',
-                        onClick: () => {
-                            // Your undo logic helper
-                            console.log(undo_product)
-                             router.patch(route('product.undo', undo_product));
-                             
-                        },
-                    },
-                }),
+                description: success,
                 duration: 3000,
             });
-        }
-    }, [message, undo_product]); // Include undo_product in dependencies
+
+        error &&
+            toast.error('Error', {
+                description: error,
+                duration: 3000,
+            });
+        
+        const timer = setTimeout(() => {
+            setSuccess(null);
+            setError(null);
+        })
+    }, [success, error]); // Include undo_product in dependencies
 
     return (
         <AppLayout>

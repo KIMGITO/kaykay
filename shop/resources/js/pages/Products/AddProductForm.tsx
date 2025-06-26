@@ -14,6 +14,7 @@ type ProductData = {
     unit: string;
     price_per_unit: number;
     is_active: boolean;
+    is_updaterble: boolean,
 };
 
 export default function ProductForm({ initialData }: { initialData?: ProductData & { id?: number } }) {
@@ -26,6 +27,7 @@ export default function ProductForm({ initialData }: { initialData?: ProductData
         unit: initialData?.unit ?? '',
         price_per_unit: initialData?.price_per_unit ?? 0,
         is_active: initialData?.is_active ?? true,
+        is_updaterble: initialData?.is_updaterble ?? false,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -86,16 +88,29 @@ export default function ProductForm({ initialData }: { initialData?: ProductData
                     <InputError message={errors.price_per_unit} />
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <Switch
-                        id="is_active"
-                        checked={data.is_active}
-                        onCheckedChange={(checked) => setData('is_active', checked)}
-                        disabled={processing}
-                    />
-                    <Label htmlFor="is_active">Available for Sale</Label>
+                <div className="flex justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            id="is_active"
+                            checked={data.is_active}
+                            onCheckedChange={(checked) => setData('is_active', checked)}
+                            disabled={processing}
+                        />
+                        <Label htmlFor="is_active">Available for Sale</Label>
+                    </div>
+                    <InputError message={errors.is_active} />
+
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            id="is_updaterble"
+                            checked={data.is_updaterble}
+                            onCheckedChange={(checked) => setData('is_updaterble', checked)}
+                            disabled={processing}
+                        />
+                        <Label htmlFor="is_updaterble">Quantity updaterble?</Label>
+                    </div>
+                    <InputError message={errors.is_updaterble} />
                 </div>
-                <InputError message={errors.is_active} />
 
                 <Button type="submit" disabled={processing} className="w-full">
                     {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}

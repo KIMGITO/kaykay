@@ -47,11 +47,12 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'flash'  => fn() =>  [
-                'error' =>  session('error'),
-                'undo_id'=>  session('undo_id') ,
+
                 'success' => session('success'),
+                'undo_id' => session('undo_id'),
+                'error' =>  session('error'),
             ],
-            'ziggy' => fn (): array => [
+            'ziggy' => fn(): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],

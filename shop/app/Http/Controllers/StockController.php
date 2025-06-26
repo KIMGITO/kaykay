@@ -87,29 +87,37 @@ class StockController extends Controller
 
         $stock->update($data);
 
-        return to_route('stocks.index')->with('success', 'Stock updated successfully.');
+        return to_route('stock.index')->with('success', 'Stock updated successfully.');
     }
 
     public function editQty($id)
     {
+        
         $stock = Stock::with('product')->find($id);
 
-        return Inertia::render('Stock/Update', ['stock' => $stock]);
-    }
+        if (!$stock->product->is_updatable) {
+            return redirect()->route('stock.index')
+                ->with('error', 'Product quantity is not updatable. Consider adding new stock.');
+        }
+
+        return Inertia::render('Stock/Update', [
+            'stock' => $stock,
+            'flash' => session('flash') // Pass any existing flash messages
+        ]);   }
 
 
 
 
     public function updateQty(Request $request, Stock $stock,  $id)
     {
-       
+
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:0',
         ]);
 
 
-        $stock->where('id',$id)-> increment('quantity_available', $validated['quantity']);
-        
+        $stock->where('id', $id)->increment('quantity_available', $validated['quantity']);
+
 
         // update summary closing if available.
         $summaryData = [

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('unit');         // e.g. Litre, Packet
             $table->decimal('price_per_unit', 10, 2);
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_updaterble')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

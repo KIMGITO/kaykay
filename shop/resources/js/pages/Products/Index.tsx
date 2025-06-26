@@ -35,31 +35,25 @@ export default function Index({ products }: { products: Product[] }) {
         // router.delete(route('products.destroy', id));
     };
 
-    const { props } = usePage<{ flash?: { success?: string; undo_id: string } }>();
+    const { props } = usePage<{ flash?: { success?: string; error?: string } }>();
 
-    const undoid = props.flash?.undo_id;
-    const [message, setMessage] = useState(props.flash?.success || '');
+    const error = props.flash?.error;
+    const success = props.flash?.error;
+    
 
    useEffect(() => {
-
-       if (message && typeof message === 'string' && message.trim() !== '') {
-
-           toast.success('Success', {
-               description: message,
-               ...(undoid != null && {
-                   // Conditional spread
-                   icon: <Trash2 className="animate-bounce" size={30} />,
-                   action: {
-                       label: 'Undo',
-                       onClick: () => {
-                           router.patch(route('product.undo', undoid));
-                       },
-                   },
-               }),
-               duration: 3000,
-           });
-       }
-   }, [message, undoid]); 
+             toast.success('Success', {
+                  description: success,
+                  duration: 3000,
+             })
+             
+       toast.error('Error', {
+           description: error,
+           duration: 3000,
+       });
+            
+       
+   }, [success,error]); 
     return (
         <AppLayout>
             <Head title="Product List" />

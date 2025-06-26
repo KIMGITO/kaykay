@@ -32,6 +32,7 @@ class ProductController extends Controller
             'unit' => ['required', 'string'],
             'price_per_unit' => ['required', 'numeric', 'min:1'],
             'is_active' => ['boolean'],
+            'is_updaterble' => ['boolean'],
         ]);
 
         Product::create($validated);

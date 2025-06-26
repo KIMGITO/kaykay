@@ -17,6 +17,7 @@ return new class extends Migration
                 ->nullable()              // required for nullOnDelete
                 ->constrained('products') // points to the 'products' table
                 ->cascadeOnDelete();         // sets foreign key to NULL on delete
+            $table->string('code')->unique();
             $table->decimal('quantity_received', 10, 2);
             $table->decimal('quantity_available', 10, 2);
             $table->date('date');

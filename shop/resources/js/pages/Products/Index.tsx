@@ -41,10 +41,8 @@ export default function Index({ products }: { products: Product[] }) {
     const [message, setMessage] = useState(props.flash?.success || '');
 
    useEffect(() => {
-       console.log('Current values:', { message, undoid }); // Debug log
 
        if (message && typeof message === 'string' && message.trim() !== '') {
-           console.log('Undo product value:', undoid); // Debug undoid
 
            toast.success('Success', {
                description: message,
@@ -92,7 +90,7 @@ export default function Index({ products }: { products: Product[] }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {products.map((product) => (
+                            {products && products.map((product) => (
                                 <tr key={product.id} className="border-t align-middle transition hover:bg-accent">
                                     <td className="px-4 py-2">{product.name}</td>
                                     <td className="px-4 py-2">{product.unit}</td>

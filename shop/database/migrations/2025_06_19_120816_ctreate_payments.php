@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-       
+
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('sale_id')->nullable()->constrained('sales')->cascadeOnDelete();
+            $table->foreignId('credit_id')->nullable()->constrained('credits')->cascadeOnDelete();
             $table->decimal('amount_paid', 10, 2);
             $table->decimal('balance', 10, 2);
             $table->enum('method', ['cash', 'mpesa']);

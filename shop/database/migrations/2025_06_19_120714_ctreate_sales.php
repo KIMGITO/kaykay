@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('code')->unique();
+            $table->foreignId('stock_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('quantity', 10, 2);
             $table->decimal('price', 10, 2);
-            $table->enum('method', ['cash', 'mpesa', 'credit']); // cash, mpesa, till, credit
             
             $table->enum('payment_status',['paid','unpaid','partial']);
 

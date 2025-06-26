@@ -11,6 +11,7 @@ import { toast, Toaster } from 'sonner';
 
 type StockFormData = {
     product_id: string;
+    product_name: string;
     quantity_received: number;
     date: string;
     source?: string;
@@ -31,6 +32,7 @@ export default function StockForm({
         quantity_received: initialData?.quantity_received ?? 0,
         date: initialData?.date ?? new Date().toISOString().split('T')[0],
         source: initialData?.source ?? '',
+        product_name: ''
     });
 
     const submit: FormEventHandler = (e) => {
@@ -69,16 +71,24 @@ export default function StockForm({
                         <Select
                             value={data.product_id}
                             onValueChange={(value) => {
-                                setData('product_id', value);
+                                
+                                const product = JSON.parse(value);
+                                setData('product_id', product.id);
+                                setData('product_name', product.name);
                             }}
                             disabled={processing}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select a product" />
+                                <SelectValue placeholder="Select a product" >{data.product_name} </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                                 {products.map((product) => (
-                                    <SelectItem key={product.id} value={product.id.toString()}>
+                                    <SelectItem key={product.id} value={
+                                        JSON.stringify({
+                                            id: product.id,
+                                            name: product.name
+                                        })
+                                    }>
                                         {product.name}
                                     </SelectItem>
                                 ))}
@@ -89,7 +99,7 @@ export default function StockForm({
 
                     <div className="grid gap-2">
                         <Label htmlFor="quantity_received">
-                            Quantity ({products.find((p) => p.id.toString() === data.product_id)?.unit || 'Unit'}){' '}
+                            Quantity in {products.find((p) => p.id.toString() === data.product_id)?.unit || 'Unit'}{' '}
                         </Label>
                         <Input
                             id="quantity_received"

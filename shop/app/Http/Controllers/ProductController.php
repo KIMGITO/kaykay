@@ -30,7 +30,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string'],
             'unit' => ['required', 'string'],
-            'price_per_unit' => ['required', 'numeric', 'min:0'],
+            'price_per_unit' => ['required', 'numeric', 'min:1'],
             'is_active' => ['boolean'],
         ]);
 

@@ -81,10 +81,10 @@ export default function CustomerIndex({ customers }: { customers: Customer[] }) 
                             </tr>
                         </thead>
                         <tbody>
-                            {customers.map((customer) => (
+                            {customers && customers.map((customer) => (
                                 <tr key={customer.id} className="border-t transition hover:bg-accent">
                                     <td className="px-4 py-2 font-medium">{customer.name}</td>
-                                    
+
                                     <td className="px-4 py-2">{customer.phone || '-'}</td>
                                     <td className="px-4 py-2">{customer.location || '-'}</td>
                                     <td className="px-4 py-2">{formatDate(customer.created_at)}</td>
@@ -93,7 +93,6 @@ export default function CustomerIndex({ customers }: { customers: Customer[] }) 
                                         <Link href={route('customers.edit', customer.id)} className="">
                                             <Button size="sm" variant="ghost" className="p-0 text-yellow-500">
                                                 <Pencil className="h-4 w-4 text-yellow-500" />
-                                                
                                             </Button>
                                         </Link>
                                         <AlertDialog>
@@ -120,7 +119,6 @@ export default function CustomerIndex({ customers }: { customers: Customer[] }) 
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
                                         </AlertDialog>
-                                        
                                     </td>
                                 </tr>
                             ))}

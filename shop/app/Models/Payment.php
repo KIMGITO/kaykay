@@ -16,6 +16,7 @@ class Payment extends Model
      */
     protected $fillable = [
         'sale_id',
+        'credit_id',
         'amount_paid',
         'balance',
         'method',
@@ -39,6 +40,11 @@ class Payment extends Model
     public function sale()
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    public function credit()
+    {
+        return $this->belongsTo(Credit::class);
     }
 
     /**
@@ -65,9 +71,28 @@ class Payment extends Model
         return match ($this->method) {
             'cash' => 'Cash',
             'mpesa' => 'M-Pesa',
-            'bank_transfer' => 'Bank Transfer',
             'credit' => 'Credit',
             default => ucfirst($this->method),
         };
+    }
+
+   
+    /**
+     * Update is_paid after debt clears
+     */
+
+    protected static function booted()
+    {
+        static::created(function ($payment) {
+
+
+
+            
+            if ($payment->credit) {
+                // dd($payment);
+                $payment->credit->update(['is_paid' => true, 'balance' => 0, 'due_date'=>null]);
+                $payment->sale->update(['payment_status' => 'paid']);
+            }
+        });
     }
 }

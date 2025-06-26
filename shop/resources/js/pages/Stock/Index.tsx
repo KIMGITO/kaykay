@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import {  useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 
@@ -27,6 +27,7 @@ interface Stock {
     id: number;
     product: Product;
     quantity_received: number;
+    quantity_available: number;
     date: string;
     source: string;
 }
@@ -83,8 +84,6 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
                     </Link>
                 </div>
 
-                
-
                 <div className="overflow-auto rounded-xl border">
                     <table className="min-w-full text-sm">
                         <thead className="bg-muted text-muted-foreground">
@@ -97,49 +96,55 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {stocks.map((stock) => (
-                                <tr key={stock.id} className="border-t transition hover:bg-accent">
-                                    <td className="px-4 py-2">{stock.product?.name}</td>
-                                    <td className="px-4 py-2">
-                                        {stock.quantity_received} {stock.product?.unit}
-                                    </td>
-                                    <td className="px-4 py-2">{formatDate(stock.date)}</td>
-                                    <td className="px-4 py-2">{stock.source}</td>
-                                    <td className="px-4 py-2">
-                                        <div className="flex gap-2">
-                                            <Link href={route('stock.edit', stock.id)}>
-                                                <Button size="sm" variant="ghost" className="p-0">
-                                                    <Pencil className="h-4 w-4 text-yellow-500" />
-                                                </Button>
-                                            </Link>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
+                            {stocks &&
+                                stocks.map((stock) => (
+                                    <tr key={stock.id} className="border-t transition hover:bg-accent">
+                                        <td className="px-4 py-2">{stock.product?.name}</td>
+                                        <td className="px-4 py-2">
+                                            {stock.quantity_available} {stock.product?.unit}
+                                        </td>
+                                        <td className="px-4 py-2">{formatDate(stock.date)}</td>
+                                        <td className="px-4 py-2">{stock.source}</td>
+                                        <td className="px-4 py-2">
+                                            <div className="flex gap-2">
+                                                <Link href={route('stock.editQty', stock.id)}>
                                                     <Button size="sm" variant="ghost" className="p-0">
-                                                        <Trash2 className="h-4 w-4 text-red-500" />
+                                                        <Upload className="h-4 w-4 text-blue-500" />
                                                     </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle className="text-red-500">Confirm Delete</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            Are you sure you want to delete this stock entry? This action is irreversible.
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() => handleDelete(stock.id)}
-                                                            className="bg-red-500 text-white hover:bg-red-600"
-                                                        >
-                                                            Delete
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                </Link>
+                                                <Link href={route('stock.edit', stock.id)}>
+                                                    <Button size="sm" variant="ghost" className="p-0">
+                                                        <Pencil className="h-4 w-4 text-yellow-500" />
+                                                    </Button>
+                                                </Link>
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button size="sm" variant="ghost" className="p-0">
+                                                            <Trash2 className="h-4 w-4 text-red-500" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle className="text-red-500">Confirm Delete</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Are you sure you want to delete this stock entry? This action is irreversible.
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDelete(stock.id)}
+                                                                className="bg-red-500 text-white hover:bg-red-600"
+                                                            >
+                                                                Delete
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             {stocks.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="p-4 text-center text-muted-foreground">

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Date;
 
 class Sale extends Model
 {
@@ -14,12 +15,12 @@ class Sale extends Model
      * @var array
      */
     protected $fillable = [
-        'product_id',
+        'code',
+        'stock_id',
         'customer_id',
         'quantity',
         'price',
-        'method',
-        'is_paid',
+        'payment_status',
         'date',
     ];
 
@@ -47,9 +48,9 @@ class Sale extends Model
     /**
      * Get the product associated with the sale.
      */
-    public function product(): BelongsTo
+    public function stock(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Stock::class);
     }
 
     /**
@@ -68,9 +69,23 @@ class Sale extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function credits()
+    /**
+     * Get the credit associated with the sale.
+     */
+
+    public function credit()
     {
-        return $this->hasMany(Credit::class);
+        return $this->hasOne(Credit::class);
+    }
+
+    /**
+     * Get the stocks associated with the sale.
+     */
+    public function stocks()
+    {
+        return $this->belongsToMany(Stock::class, 'sale_stock')
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 
   
@@ -91,18 +106,12 @@ class Sale extends Model
         return max($this->price - $this->total_paid, 0);
     }
 
-    public function getPaymentStatusAttribute()
-    {
-        if ($this->balance_due <= 0) {
-            return 'paid';
-        }
+    
 
-        return $this->payments->isEmpty() ? 'unpaid' : 'partial';
-    }
+    
 
     public function recordPayment(array $data)
     {
-        
         $payment = $this->payments()->create([
 
             'amount_paid' => $data['amount_paid'],
@@ -113,24 +122,37 @@ class Sale extends Model
             'payment_date' => $data['payment_date'] ?? now(),
         ]);
 
-        // Update sale status if fully paid
-        // if ($this->fresh()->balance_due <= 0) {
-        //     $this->update(['method' => true]);
-        // }
-
-        return $payment;
+        // record stock sold
+        // $this->stocks()->create([
+        //     'quantity' => $this->quantity,
+        //     'stock_id' => $data['stock_id'],
+        // ]);
+        
     }
 
+    /**
+     * record Credit
+     */
     public function recodCredit($data){
-        return $this->credits()->create([
-            'amount' => $data['amount'],
+        return $this->credit()->create([
+            'balance' => $data['balance'],
+            'amount_paid'=> $data['amount_paid'],
             'due_date' => $data['due_date'],
             'is_paid' => $data['is_paid'] ?? false,
-            'sale_id',
-           
+            
         ]);
     }
 
-    // reduce stock
+
+
+    protected static function booted()
+    {
+        static::created(function ($sale) {
+
+            // dd($sale->quantity);
+        });
+    }
+
+    
     
 }

@@ -3,11 +3,10 @@ import AppLogoIcon from './app-logo-icon';
 export default function AppLogo() {
     return (
         <>
-            <div className="flex aspect-square size-8 items-center bg-transparent justify-center rounded-md text-sidebar-primary-foreground">
-                <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
+            <div className="flex aspect-video size-28 items-center bg-transparent justify-center rounded-md text-sidebar-primary-foreground">
+                <AppLogoIcon className=" fill-current text-white dark:text-black" />
             </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">KayKay's</span>
+            <div className="ml-1 grid flex-1 text-center text-sm">
             </div>
         </>
     );

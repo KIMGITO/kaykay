@@ -7,135 +7,159 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AuthLayout from '@/layouts/auth-layout';
 import { useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
-import { FormEventHandler, useEffect } from 'react';
+import { FormEventHandler } from 'react';
 
 interface Product {
-    id: number;
+    id: string;
     name: string;
-    price_per_unit: number;
     unit: string;
+    price_per_unit: string;
+}
+
+interface Stock {
+    id: string;
+    receipt: string;
+    quantity_received: string;
+    quantity_available: number;
+    product: Product;
 }
 
 interface Customer {
-    id: number;
     name: string;
+    id: string;
 }
 
-interface SaleFormData {
-    product_id: string;
-    customer_id: string;
-    quantity: number;
-    price: number;
-    method: 'cash' | 'mpesa' | 'credit';
-    payment_status: 'paid' | 'unpaid' | 'partial';
-    amount_paid?: number;
-    date: string;
-}
-
-interface SaleFormProps {
-    products: Product[];
+interface SaleProps {
+    stocks: Stock[];
     customers: Customer[];
-    initialData?: SaleFormData & { id?: number };
-   
 }
 
-export default function SaleForm({ products, customers, initialData }: SaleFormProps) {
-    const isEditing = !!initialData?.id;
-
-    interface SaleFormData {
+export default function AddSalesForm({ stocks, customers }: SaleProps) {
+    interface FormProps {
         product_id: string;
+        stock_id: string;
+        stock_code: string;
         customer_id: string;
-        quantity: number;
-        price: number;
-        method: 'cash' | 'mpesa' | 'credit';
-        payment_status: 'paid' | 'unpaid' | 'partial';
-        amount_paid?: number;
-        date: string;
-        [key: string]: any; // Added index signature
+        sale_quantity: string;
+        total_price: string;
+        payment_method: 'mpesa | cash | credit';
+        sale_date: string;
+        payment_status: 'paid | paertial | unpaid';
+        amount_paid?: string;
+        payment_balance?: string;
+
+        [key: string]: any;
     }
 
-    const { data, setData, post, put, processing, errors, reset } = useForm<SaleFormData>({
-        product_id: initialData?.product_id?.toString() ?? '',
-        customer_id: initialData?.customer_id?.toString() ?? '',
-        quantity: initialData?.quantity ?? 1,
-        price: initialData?.price ?? 0,
-        method: initialData?.method ?? 'cash',
-        payment_status: initialData?.payment_status ?? 'unpaid',
-        amount_paid: initialData?.amount_paid ?? 0,
-        date: initialData?.date ?? new Date().toISOString().split('T')[0],
+    const { data, setData, post, put, errors, processing, reset } = useForm({
+        product_id: '',
+        product_name: '',
+        product_price: '',
+        unit: '',
+        quantity_available: '',
+        stock_id: '',
+        stock_code: '',
+        customer_id: '',
+        customer_name: '',
+        sale_quantity: 0,
+        total_price: 0,
+        payment_method: 'mpesa',
+        sale_date: new Date().toISOString().split('T')[0],
+        payment_status: 'paid',
+        amount_paid: 0,
+        payment_balance: 0,
+        stock_available: 0,
     });
 
-    // Calculate total price when product or quantity changes
-    useEffect(() => {
-        if (data.product_id) {
-            const selectedProduct = products.find((p) => p.id.toString() === data.product_id);
-            if (selectedProduct) {
-                const newPrice = selectedProduct.price_per_unit * data.quantity;
-                setData('price', parseFloat(newPrice.toFixed(2)));
-
-                // If payment status is paid, update amount_paid to match new price
-                if (data.payment_status === 'paid') {
-                    setData('amount_paid', parseFloat(newPrice.toFixed(2)));
-                }
-            }
-        }
-    }, [data.product_id, data.quantity]);
-
-    const handlePaymentStatusChange = (status: 'paid' | 'unpaid' | 'partial') => {
-        setData('payment_status', status);
-
-        // Automatically set amount_paid based on status
-        if (status === 'paid') {
-            setData('amount_paid', data.price);
-        } else if (status === 'unpaid') {
-            setData('amount_paid', 0);
-        }
-    };
-
+    //submit logic
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        const formData = {
-            product_id: parseInt(data.product_id),
-            customer_id: data.customer_id ? parseInt(data.customer_id) : null,
-            quantity: data.quantity,
-            price: data.price,
-            method: data.method,
+        const FormData = {
+            product_id: data.product_id,
+            stock_id: data.stock_id,
+            stock_code: data.stock_code,
+            customer_id: data.customer_id || null,
+            sale_quantity: data.sale_quantity,
+            total_price: data.total_price,
+            payment_method: data.payment_method,
+            sale_date: data.sale_date,
             payment_status: data.payment_status,
             amount_paid: data.amount_paid,
-            date: data.date,
+            payment_balance: data.payment_balance,
         };
 
-        const requestOptions = {
-            onSuccess: () => {
-                if (!isEditing) reset();
-            },
-        };
+        post(route('sale.store'));
+    };
 
-        if (isEditing) {
-            put(route('sale.update', initialData?.id));
-        } else {
-            post(route('sale.store'));
-        }
+    const handlePaymentStatusChange = (status: string) => {
+        const amountPaid = status === 'paid' ? data.total_price : 0;
+        const paymentBalance = status === 'paid' ? 0 : data.total_price;
+
+        // Single state update (cleaner)
+        setData({
+            ...data,
+            payment_status: status,
+            amount_paid: amountPaid,
+            payment_balance: paymentBalance,
+        });
     };
 
     return (
-        <AuthLayout title={isEditing ? 'Edit Sale' : 'New Sale'} description={isEditing ? 'Update sale record' : 'Record a new sale below.'}>
+        <AuthLayout title={'New Sale'} description={'Record a new sale below.'}>
             <form onSubmit={submit} className="w-full max-w-xl space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     {/* Product Selection */}
                     <div className="space-y-2">
                         <Label htmlFor="product_id">Product</Label>
-                        <Select value={data.product_id} onValueChange={(value) => setData('product_id', value)} disabled={processing} required>
+                        <Select
+                            value={data.stock_id}
+                            onValueChange={(value) => {
+                                const selectedStock = JSON.parse(value);
+                                const updatedData = {
+                                    stock_id: selectedStock.stock_id,
+                                    stock_code: selectedStock.stock_code,
+                                    product_id: selectedStock.product_id,
+                                    product_name: selectedStock.product_name,
+                                    product_price: selectedStock.product_price,
+                                    unit: selectedStock.unit,
+                                    stock_available: selectedStock.quantity_available,
+                                };
+
+                                setData((prev) => ({ ...prev, ...updatedData }));
+                                setData('sale_quantity', 0);
+                                setData('total_price', 0);
+                            }}
+                            disabled={processing}
+                        >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select product" />
+                                <SelectValue placeholder="Product">{data.product_name}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
-                                {products.map((product) => (
-                                    <SelectItem key={product.id} value={product.id.toString()}>
-                                        {product.name} ({product.price_per_unit}/{product.unit})
-                                    </SelectItem>
-                                ))}
+                                {/* {
+                                   stocks && stocproductsoer' > check </SelectItem>
+                                    ))
+                                } */}
+                                {stocks &&
+                                    stocks.map(
+                                        (stock, index) =>
+                                            stock.quantity_available > 0 && (
+                                                <SelectItem
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        stock_id: stock.id,
+                                                        stock_code: stock.receipt,
+                                                        product_id: stock.product.id,
+                                                        product_name: stock.product.name,
+                                                        product_price: stock.product.price_per_unit,
+                                                        unit: stock.product.unit,
+                                                        quantity_available: stock.quantity_available,
+                                                    })}
+                                                >
+                                                    {stock.product.name} {stock.product.price_per_unit}/{stock.product.unit}
+                                                </SelectItem>
+                                            ),
+                                    )}
                             </SelectContent>
                         </Select>
                         <InputError message={errors.product_id} />
@@ -144,14 +168,28 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                     {/* Customer Selection */}
                     <div className="space-y-2">
                         <Label htmlFor="customer_id">Customer</Label>
-                        <Select value={data.customer_id} onValueChange={(value) => setData('customer_id', value)} disabled={processing}>
+                        <Select
+                            value={data.customer_id}
+                            onValueChange={(value) => {
+                                const selectedCustomer = JSON.parse(value);
+                                setData('customer_id', selectedCustomer.id);
+                                setData('customer_name', selectedCustomer.name);
+                            }}
+                            disabled={processing}
+                        >
                             <SelectTrigger>
-                                <SelectValue placeholder="Select customer" />
+                                <SelectValue placeholder="Customer">{data.customer_id ? data.customer_name : 'walk in'}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                                 {/* <SelectItem value="">Walk-in Customer</SelectItem> */}
-                                {customers.map((customer) => (
-                                    <SelectItem key={customer.id} value={customer.id.toString()}>
+                                {customers?.map((customer, index) => (
+                                    <SelectItem
+                                        key={index}
+                                        value={JSON.stringify({
+                                            id: customer.id,
+                                            name: customer.name,
+                                        })}
+                                    >
                                         {customer.name}
                                     </SelectItem>
                                 ))}
@@ -168,14 +206,23 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                         <Input
                             id="quantity"
                             type="number"
-                            step="1"
-                            min="1"
-                            value={data.quantity}
-                            onChange={(e) => setData('quantity', parseFloat(e.target.value))}
+                            step={'any'}
+                            min="0.1"
+                            // max={data.stock_available}
+                            value={data.sale_quantity > data.stock_available ? data.stock_available : data.sale_quantity}
+                            onChange={(e) => {
+                                const inputValue = parseFloat(e.target.value);
+                                const maxQuantity = data.stock_available; // Already a number
+                                const price = Number(data.product_price); // Ensure price is a number
+
+                                const quantity = parseFloat(Math.min(Math.max(0, inputValue), maxQuantity).toFixed(1));
+
+                                setData('total_price', price ? Math.round(quantity * price) : 0);
+                                setData('sale_quantity', quantity);
+                            }}
                             disabled={processing || !data.product_id}
-                            required
                         />
-                        <InputError message={errors.quantity} />
+                        <InputError message={errors.sale_quantity} />
                     </div>
 
                     {/* Price */}
@@ -185,13 +232,11 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                             id="price"
                             type="number"
                             min="0"
-                            step="0.01"
-                            value={data.price.toFixed(2)}
-                            onChange={(e) => setData('price', parseFloat(e.target.value))}
+                            value={data.total_price.toFixed(2)}
+                            onChange={(e) => setData('total_price', parseFloat(e.target.value))}
                             disabled={processing}
-                            required
                         />
-                        <InputError message={errors.price} />
+                        <InputError message={errors.total_price} />
                     </div>
                 </div>
 
@@ -200,10 +245,9 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                     <div className="space-y-2">
                         <Label htmlFor="method">Payment Method</Label>
                         <Select
-                            value={data.method || ''}
-                            onValueChange={(value: 'cash' | 'mpesa' | 'credit') => setData('method', value)}
+                            value={data.payment_method || 'mpesa'}
+                            onValueChange={(value: 'cash' | 'mpesa' | 'credit') => setData('payment_method', value)}
                             disabled={processing}
-                            required
                         >
                             <SelectTrigger>
                                 <SelectValue />
@@ -214,7 +258,7 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                                 <SelectItem value="credit">Credit</SelectItem>
                             </SelectContent>
                         </Select>
-                        <InputError message={errors.method} />
+                        <InputError message={errors.payment_method} />
                     </div>
 
                     {/* Date */}
@@ -223,12 +267,13 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                         <Input
                             id="date"
                             type="date"
-                            value={data.date}
-                            onChange={(e) => setData('date', e.target.value)}
+                            min="2020-01-01"
+                            max={new Date().toISOString().split('T')[0]} // Today's date
+                            value={data.sale_date}
+                            onChange={(e) => setData('sale_date', e.target.value)}
                             disabled={processing}
-                            required
                         />
-                        <InputError message={errors.date} />
+                        <InputError message={errors.sale_date} />
                     </div>
                 </div>
 
@@ -238,7 +283,9 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                         <Label>Payment Status</Label>
                         <RadioGroup
                             value={data.payment_status}
-                            onValueChange={(value: 'paid' | 'unpaid' | 'partial') => handlePaymentStatusChange(value)}
+                            onValueChange={(value) => {
+                                handlePaymentStatusChange(value);
+                            }}
                             className="flex gap-4"
                         >
                             <div className="flex items-center gap-2">
@@ -258,32 +305,34 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                     </div>
 
                     {/* Conditional Amount Paid Input */}
-                    {(data.payment_status === 'partial' || data.payment_status === 'paid') && (
+                    {data.payment_status === 'partial' && (
                         <div className="space-y-2">
-                            <Label htmlFor="amount_paid">{data.payment_status === 'paid' ? 'Amount Paid' : 'Partial Amount Paid'}</Label>
+                            <Label htmlFor="amount_paid">{'Partial Amount Paid'}</Label>
                             <Input
                                 id="amount_paid"
                                 type="number"
                                 min="0"
-                                max={data.price}
-                                value={data.amount_paid ?? 0}
+                                value={data.amount_paid}
                                 onChange={(e) => {
-                                    const value = parseFloat(e.target.value);
-                                    setData('amount_paid', value);
-                                    // Automatically update payment status if amount matches total
-                                    if (value >= data.price) {
-                                        setData('payment_status', 'paid');
-                                    } else if (value > 0) {
-                                        setData('payment_status', 'partial');
+                                    const value = parseInt(e.target.value);
+                                    if (value > data.total_price) {
+                                        setData('amount_paid', data.total_price);
+                                        setData('payment_balance', data.total_price - value <= 0 ? 0 : data.total_price - value);
                                     } else {
-                                        setData('payment_status', 'unpaid');
+                                        setData('amount_paid', value);
+                                        setData('payment_balance', data.total_price - value <= 0 ? 0 : data.total_price - value);
+                                    }
+
+                                    if (data.payment_balance <= 0) {
+                                        setData('payment_status', 'paid');
                                     }
                                 }}
-                                disabled={processing || data.payment_status === 'paid'}
-                                required={data.payment_status === 'partial' || data.payment_status === 'paid'}
+                                disabled={processing}
                             />
                             {data.payment_status === 'partial' && (
-                                <div className="text-sm text-red-700 bg-red-300">Remaining: {(data.price - (data.amount_paid || 0)).toFixed(2)} Ksh</div>
+                                <div className="rounded-2xl bg-red-300 text-center text-sm text-red-700">
+                                    Remaining: {isNaN(data.payment_balance) ? 0 : data.payment_balance} Ksh
+                                </div>
                             )}
                             <InputError message={errors.amount_paid} />
                         </div>
@@ -292,7 +341,7 @@ export default function SaleForm({ products, customers, initialData }: SaleFormP
                     {/* Submit Button */}
                     <Button type="submit" disabled={processing} className="w-full">
                         {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isEditing ? 'Update Sale' : 'Record Sale'}
+                        {'Record Sale'}
                     </Button>
                 </div>
             </form>

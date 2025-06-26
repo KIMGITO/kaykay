@@ -1,11 +1,32 @@
 'use client';
 
-import { ArrowLeftRightIcon, AudioWaveform, Blocks, BookOpen, Bot, Cog, Command, DollarSignIcon, Euro, Frame, GalleryVerticalEnd, LayoutDashboardIcon, LayoutGrid, Map, Milk, PieChart, PillBottle, Settings2, SquareTerminal, Users, UsersRound, Wallet } from 'lucide-react';
+import {
+    ArrowLeftRightIcon,
+    AudioWaveform,
+    Blocks,
+    BookMarkedIcon,
+    BookOpen,
+    Cog,
+    Command,
+    DollarSignIcon,
+    Euro,
+    Frame,
+    GalleryVerticalEnd,
+    LayoutDashboardIcon,
+    LayoutGrid,
+    Map,
+    Milk,
+    PieChart,
+    PillBottle,
+    Settings2,
+    Users,
+    UsersRound,
+    Wallet,
+} from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
 // import { NavProjects } from '@/components/nav-projects';
-import { NavUser } from '@/components/nav-user';
 import { TeamSwitcher } from '@/components/team-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 
@@ -55,6 +76,11 @@ const data = {
                     icon: ArrowLeftRightIcon,
                 },
                 {
+                    title: 'Credit Sales',
+                    url: '/credits',
+                    icon: BookMarkedIcon,
+                },
+                {
                     title: 'Daily Summary',
                     url: '/summaries',
                     icon: BookOpen,
@@ -96,7 +122,7 @@ const data = {
                 {
                     title: 'Payments',
                     url: '/payments',
-                    icon: Euro
+                    icon: Euro,
                 },
                 {
                     title: 'Expenses',
@@ -148,9 +174,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain items={data.navMain} />
                 {/* <NavProjects projects={data.projects} /> */}
             </SidebarContent>
-            <SidebarFooter>
-                {/* <NavUser user={data.user} /> */}
-            </SidebarFooter>
+            <SidebarFooter>{/* <NavUser user={data.user} /> */}</SidebarFooter>
             <SidebarRail />
         </Sidebar>
     );

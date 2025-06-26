@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('credits', function (Blueprint $table) {
+        Schema::create('summaries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
-            $table->decimal('amount', 10, 2);
-            $table->dateTime('due_date');
-            $table->boolean('is_paid')->default(false);
+            $table->foreignId('stock_id')->constrained('stocks','id')->cascadeOnDelete();
+            $table->float('opening_stock');
+            $table->float('stock_out');
+            $table->float('closing_stock');
+            $table->date('summary_date');
             $table->timestamps();
 
-            $table->index('sale_id');
-            $table->index('due_date');
         });
-        
     }
 
     /**
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('credits');
+        Schema::dropIfExists('summaries');
     }
 };

@@ -13,7 +13,8 @@ class Credit extends Model
      */
     protected $fillable = [
         'sale_id',
-        'amount',
+        'amount_paid',
+        'balance',
         'due_date',
         'is_paid',
     ];
@@ -24,7 +25,8 @@ class Credit extends Model
      * @var array
      */
     protected $casts = [
-        'amount' => 'decimal:2',
+        'amount_paid' => 'decimal:2',
+        
         'due_date' => 'datetime',
         'is_paid' => 'boolean',
     ];
@@ -36,6 +38,11 @@ class Credit extends Model
     {
         return $this->belongsTo(Sale::class);
     }
+
+    public function payment(){
+        return $this->hasMany(Payment::class);
+    }
+
     /**
      * Scope for unpaid credits.
      */
@@ -50,6 +57,22 @@ class Credit extends Model
     {
         return $query->where('is_paid', true);
     }
+
+    /**
+     * Mark the credit as paid.
+     *
+     * @return void
+     */
+    public function markAsPaid()
+    {
+        $this->is_paid = true;
+        $this->save();
+    }
+
+  
+
+
+
     
     
 }

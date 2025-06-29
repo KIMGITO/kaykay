@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AuthLayout from '@/layouts/auth-layout';
-import { useForm } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
@@ -51,13 +52,13 @@ interface FormData {
     amount_paid: number;
     payment_balance: number;
     stock_available: number;
-    [key: string] : any
+    [key: string]: any
 }
 
 export default function AddSalesForm({ stocks, customers }: SaleProps) {
     console.log(stocks);
     
-    const { data, setData, post, errors, processing, reset } = useForm<FormData>({
+    const { data, setData, post, errors, processing} = useForm<FormData>({
         product_id: '',
         product_name: '',
         product_price: 0,
@@ -236,11 +237,18 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
                                 <SelectValue placeholder="Customer">{data.customer_name || 'Walk-in'}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
-                                {customers.map((customer) => (
-                                    <SelectItem key={customer.id} value={JSON.stringify(customer)}>
-                                        {customer.name}
-                                    </SelectItem>
-                                ))}
+                                {
+                                    customers.map((customer) => (
+                                        <SelectItem key={customer.id} value={JSON.stringify(customer)}>
+                                            {customer.name}
+                                        </SelectItem>
+                                    ))}
+                                <div className="rounded b mt-4">
+                                    No Customer.
+                                    <Link href={route('customers.create')}>
+                                        <u>Add a customer ?</u>{' '}
+                                    </Link>
+                                </div>
                             </SelectContent>
                         </Select>
                         <InputError message={errors.customer_id} />

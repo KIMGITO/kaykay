@@ -11,7 +11,8 @@ import { toast } from 'sonner';
 
 type CustomerFormData = {
     name: string;
-    note?:  string
+    note?: string;
+    bill_duration: string;
     phone?: string;
     location?: string;
 };
@@ -23,22 +24,25 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
         name: initialData?.name ?? '',
         phone: initialData?.phone ?? '',
         location: initialData?.location ?? '',
+        bill_duration: initialData?.bill_duration ?? 'Daily',
         note: initialData?.note ?? '',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        const action = isEditing
-            ? put(route('customers.update', initialData?.id))
-            : post(route('customers.store'), {
-                  onSuccess: () => {
-                      reset();
-                      toast.success(isEditing ? 'Customer updated successfully' : 'Customer created successfully');
-                  },
-                  onError: () => {
-                      toast.error('There was an error processing your request');
-                  },
-              });
+        if (isEditing) {
+            put(route('customers.update', initialData?.id));
+        } else {
+            post(route('customers.store'), {
+                onSuccess: () => {
+                    reset();
+                    toast.success(isEditing ? 'Customer updated successfully' : 'Customer created successfully');
+                },
+                onError: () => {
+                    toast.error('There was an error processing your request');
+                },
+            });
+        }
     };
 
     return (
@@ -87,6 +91,21 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
                             placeholder="e.g. City, Country"
                         />
                         {errors.location && <p className="text-sm font-medium text-destructive">{errors.location}</p>}
+                    </div>
+                    <div>
+                        <Label className='mb-2' htmlFor="bill_duration">Bill Duration.</Label>
+                        <Select onValueChange={(value) => setData('bill_duration', value)}>
+                            <SelectTrigger>
+                                <SelectValue>{data.bill_duration || 'Bill Duration.'}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Daily">
+                                    {' Daily'}
+                                </SelectItem>
+                                <SelectItem value="Weekly"> {'Weekly'}</SelectItem>
+                                <SelectItem value="Monthly"> {'Monthly'}</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="note">Notes</Label>

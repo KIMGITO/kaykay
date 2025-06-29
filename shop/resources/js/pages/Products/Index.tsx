@@ -15,7 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 
 type Product = {
@@ -32,28 +32,29 @@ export default function Index({ products }: { products: Product[] }) {
     };
 
     const handleDelete = (id: number) => {
-        // router.delete(route('products.destroy', id));
+        router.delete(route('products.destroy', id));
     };
 
     const { props } = usePage<{ flash?: { success?: string; error?: string } }>();
 
-    const error = props.flash?.error;
-    const success = props.flash?.error;
-    
+        const error = props.flash?.error;
+        const success = props.flash?.success;
 
-   useEffect(() => {
-             toast.success('Success', {
-                  description: success,
-                  duration: 3000,
-             })
-             
-       toast.error('Error', {
-           description: error,
-           duration: 3000,
-       });
-            
-       
-   }, [success,error]); 
+        useEffect(() => {
+           if (success) {
+                 toast.success('Success', {
+                      description: success,
+                      duration: 3000,
+                 });
+           }
+           
+           if (error) {
+               toast.error('Error', {
+                   description: error,
+                   duration: 3000,
+               });
+           }
+       }, [success, error]); 
     return (
         <AppLayout>
             <Head title="Product List" />

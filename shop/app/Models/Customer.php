@@ -10,6 +10,7 @@ class Customer extends Model
         'name',
         'note', // Individual / Business
         'phone',
+        'bill_duration',
         'location',
     ];
 

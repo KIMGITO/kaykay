@@ -25,10 +25,11 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
        
-
+// TODO: validate customers
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20|unique:customers,phone',
+            'bill_duration' => 'required|in:daily,weekly,monthly|string',
             'location' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
         ]);

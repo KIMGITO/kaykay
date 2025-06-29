@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('note')->nullable();
             $table->string('phone')->nullable();
+            $table->enum('bill_duration', ['daily', 'weekly', 'monthly'])->default('daily');
             $table->string('location')->nullable();
             $table->timestamps();
         });
@@ -26,6 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('customers');
+        
     }
 };

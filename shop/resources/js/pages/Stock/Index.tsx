@@ -25,6 +25,7 @@ interface Product {
 
 interface Stock {
     id: number;
+    uuid: string;
     product: Product;
     quantity_received: number;
     quantity_available: number;
@@ -32,6 +33,14 @@ interface Stock {
     source: string;
 }
 
+
+const breadcrumb = [
+    {
+        title: 'Product Stock',
+        href: '/stock',
+
+    },
+]
 export default function StockIndex({ stocks }: { stocks: Stock[] }) {
     const handleDelete = (id: number) => {
         router.delete(route('stock.destroy', id));
@@ -43,22 +52,23 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
     const error = props.flash?.error;
 
     useEffect(() => {
-        success &&
+        if (success) {
             toast.success('Success', {
                 description: success,
                 duration: 3000,
             });
-
-        error &&
+        }
+        if (error) {
             toast.error('Error', {
                 description: error,
                 duration: 3000,
-            });
+            })
+        };
         
     }, [success, error]); // Include undo_product in dependencies
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumb}>
             <Head title="Stock List" />
             <div className="p-4">
                 <div className="mb-4 flex items-center justify-between">
@@ -100,7 +110,7 @@ export default function StockIndex({ stocks }: { stocks: Stock[] }) {
                                                         <Upload className="h-4 w-4 text-blue-500" />
                                                     </Button>
                                                 </Link>
-                                                <Link href={route('stock.edit', stock.id)}>
+                                                <Link href={route('stock.edit', stock.uuid)}>
                                                     <Button size="sm" variant="ghost" className="p-0">
                                                         <Pencil className="h-4 w-4 text-yellow-500" />
                                                     </Button>

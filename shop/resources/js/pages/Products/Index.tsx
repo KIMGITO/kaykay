@@ -19,12 +19,20 @@ import { useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 
 type Product = {
+    uuid: string;
     id: number;
     name: string;
     unit: string;
     price_per_unit: number;
     is_active: boolean;
 };
+
+const breadcrumb = [
+    {
+        title: 'Products',
+        href: '/product',
+    }
+];
 
 export default function Index({ products }: { products: Product[] }) {
     const handleToggle = (id: number) => {
@@ -56,7 +64,7 @@ export default function Index({ products }: { products: Product[] }) {
            }
        }, [success, error]); 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumb}>
             <Head title="Product List" />
             <div className="p-4">
                 <div className="mb-4 flex items-center justify-between">
@@ -115,7 +123,7 @@ export default function Index({ products }: { products: Product[] }) {
                                     </td>
                                     <td className="px-4 py-2">
                                         <div className="flex gap-2">
-                                            <Link href={`${route('product.edit', product.id)}`}>
+                                            <Link href={`${route('product.edit', product.uuid)}`}>
                                                 <Button size="sm" className="border-yellow-300 p-0 hover:border" variant="ghost">
                                                     <Pencil className="h-4 w-4 text-yellow-400" />
                                                 </Button>

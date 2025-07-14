@@ -1,10 +1,9 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import Appearance from '@/pages/settings/appearance';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import AppearanceTabs from './appearance-tabs';
 import { Button } from './ui/button';
-import { EyeClosed, EyeIcon, Moon } from 'lucide-react';
+import { EyeClosed, EyeIcon, } from 'lucide-react';
 import { useState } from 'react';
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {

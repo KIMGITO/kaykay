@@ -20,6 +20,7 @@ export default function AppHeader() {
             {/* Mobile Menu Button */}
             <Button variant={"ghost"} className="rounded-full md:hidden">
               <MoreVerticalIcon />
+              
             </Button>
 
             {/* Logo - Responsive sizing */}

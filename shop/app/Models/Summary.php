@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Summary extends Model
 {
 
-    protected $tabe = 'summaries';
+    protected $table = 'summaries';
 
     protected $fillable = [
         'stock_id',
@@ -26,13 +27,15 @@ class Summary extends Model
     }
 
 
-
     public function scopeUpdateSummary($query, array $data)
     {
+        $data['opening_stock'] = Stock::where('id', $data['stock_id'])->value('quantity_available');
         $recorded = $this->where([
             ['stock_id', '=', $data['stock_id']],
             ['summary_date', '=', $data['summary_date']],
         ])->exists();
+
+        
 
         if ($recorded) {
             $this->where([
@@ -43,7 +46,6 @@ class Summary extends Model
                 'stock_out' => DB::raw('stock_out + ' . $data['stock_out'])
             ]);
         } else {
-            // new
             $data['closing_stock'] = $data['opening_stock'] - $data['stock_out'];
 
             $this->create($data);
@@ -64,5 +66,17 @@ class Summary extends Model
         }
         return;
 
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // if (empty($model->uuid)) {
+            //     $model->uuid = Str::uuid();
+
+            // }
+        });
     }
 }

@@ -12,13 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customers', function (Blueprint $table) {
+
             $table->id();
-            $table->string('name');
+            $table->uuid()->unique();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('phone');
+            $table->string('email') -> nullable();
+            $table->string('home');
+            $table->string('house_number')->nullable();
             $table->string('note')->nullable();
-            $table->string('phone')->nullable();
             $table->enum('bill_duration', ['daily', 'weekly', 'monthly'])->default('daily');
-            $table->string('location')->nullable();
             $table->timestamps();
+            $table->index('uuid');
         });
     }
 
@@ -28,6 +34,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('customers');
-        
     }
 };

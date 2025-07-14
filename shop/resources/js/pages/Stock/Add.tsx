@@ -22,9 +22,20 @@ interface Props  {
 };
 
 
+const breadcrumb = [
+    {
+        title: 'Products Stock ',
+        href: '/stock',
+    },
+    {
+        title: 'Stock a product',
+        href: '/stock/create',
+    },
+];
+
 export default function Add({ products }: Props) {
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumb}>
             <Head title="Add Stock" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <StockForm products={products} />

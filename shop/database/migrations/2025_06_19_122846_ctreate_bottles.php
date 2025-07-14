@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('bottles', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->string('size');         // e.g. "500ml", "1L"
             $table->decimal('price', 10, 2); // e.g. 10.00
             $table->integer('quantity');

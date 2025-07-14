@@ -2,157 +2,84 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Date;
 
 class Sale extends Model
 {
+    //!IMPORTANT:
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'code',
-        'stock_id',
+        'invoice_number',
         'customer_id',
-        'quantity',
-        'price',
-        'payment_status',
         'date',
+        'total',
+        'balance',
+        'payment_status',
+        'user_id',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'quantity' => 'decimal:2',
-        'price' => 'decimal:2',
-        'is_paid' => 'boolean',
-        'date' => 'date',
-    ];
-
-    /**
-     * Payment methods.
-     */
-    public const METHODS = [
-        'cash' => 'Cash',
-        'mpesa' => 'M-Pesa',
-        'credit' => 'Credit',
-    ];
-
-    /**
-     * Get the product associated with the sale.
-     */
-    public function stock(): BelongsTo
+    public function getRouteKeyName()
     {
-        return $this->belongsTo(Stock::class);
+        return 'uuid';
     }
 
-    /**
-     * Get the customer associated with the sale.
-     */
-    public function customer(): BelongsTo
-    {
+
+    public function saleStock(){
+        return $this->hasMany(SaleStock::class);
+    }
+    public function customer(){
         return $this->belongsTo(Customer::class);
     }
 
-    /**
-     * Get formatted payment method.
-     */
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    public function payment(){
+        return $this->hasMany(Payment::class,'sale_id');
     }
 
-    /**
-     * Get the credit associated with the sale.
-     */
+    //! GENERATE  INVOICE NUMBER
+    public function scopeGenerateInvoice($query){
+        $last = $this->latest('id')->first();
+        $number = $last ? $last->id + 1 : 1;
+        return 'INV-' . str_pad($number, 5, '0', STR_PAD_LEFT); 
 
-    public function credit()
-    {
-        return $this->hasOne(Credit::class);
     }
 
-    /**
-     * Get the stocks associated with the sale.
-     */
-    public function stocks()
-    {
-        return $this->belongsToMany(Stock::class, 'sale_stock')
-            ->withPivot('quantity')
-            ->withTimestamps();
-    }
-
-  
-
-
-    public function latestPayment()
-    {
-        return $this->hasOne(Payment::class)->latestOfMany();
-    }
-
-    public function getTotalPaidAttribute()
-    {
-        return $this->payments->sum('amount');
-    }
-
-    public function getBalanceDueAttribute()
-    {
-        return max($this->price - $this->total_paid, 0);
-    }
-
-    
-
-    
-
-    public function recordPayment(array $data)
-    {
-        $payment = $this->payments()->create([
-
-            'amount_paid' => $data['amount_paid'],
-            'balance' => $data['balance'],
-            'method' => $data['method'],
-            'reference' => $data['reference'] ?? null,
-            'notes' => $data['notes'] ?? null,
-            'payment_date' => $data['payment_date'] ?? now(),
-        ]);
-
-        // record stock sold
-        // $this->stocks()->create([
-        //     'quantity' => $this->quantity,
-        //     'stock_id' => $data['stock_id'],
-        // ]);
+    //! GROUP SIMILAR PRODUCT TO ONE SALE
+    public function scopeGroupSaleItem($query, $saleItems){
         
+        $grouped = [];
+
+        foreach ($saleItems as $item) {
+            $key = $item['product_id'] . '-' . $item['stock_id'];
+
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = $item;
+            } else {
+                // Sum quantities and totals
+                $grouped[$key]['sale_quantity'] += (float) $item['sale_quantity'];
+                $grouped[$key]['total_price'] += (float) $item['total_price'];
+            }
+
+        }
+        return  array_values($grouped);
     }
 
-    /**
-     * record Credit
-     */
-    public function recodCredit($data){
-        return $this->credit()->create([
-            'balance' => $data['balance'],
-            'amount_paid'=> $data['amount_paid'],
-            'due_date' => $data['due_date'],
-            'is_paid' => $data['is_paid'] ?? false,
-            
-        ]);
-    }
+ 
 
-
-
-    protected static function booted()
+    protected static function boot()
     {
-        static::created(function ($sale) {
+        parent::boot();
 
-            // dd($sale->quantity);
+        static::creating(function ($model) {
+            // Only generate if it's not already set
+            if (empty($model->uuid)) {
+                $model->uuid = Str::uuid();
+            }
         });
-    }
 
-    
-    
+       
+    }
 }

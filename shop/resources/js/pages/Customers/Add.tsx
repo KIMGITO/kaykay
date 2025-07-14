@@ -10,13 +10,23 @@ interface Props {
         phone?: string;
         location?: string;
         note?: string;
-
     };
 }
 
+const breadcrumbs = [
+    {
+        title: 'Customers',
+        href: '/customers',
+    },
+    {
+        title: 'Add Customer',
+        href: '/customers/create',
+    },
+];
+
 export default function AddCustomer({ initialData }: Props) {
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={initialData?.id ? 'Edit Customer' : 'Add New Customer'} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* <CustomerForm initialData={initialData} /> */}

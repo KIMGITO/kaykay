@@ -3,179 +3,153 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sale;
-use App\Models\Bottle;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Product;
+use App\Models\Stock;
 use App\Models\Customer;
 use App\Models\Payment;
-use Illuminate\Support\Facades\DB;
-use App\Models\Stock;
+use App\Models\SaleStock;
 use App\Models\Summary;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Traits\Date;
+use App\Models\Invoice;
 
 class SaleController extends Controller
 {
-
     public function index()
     {
-        $sales = Sale::with(['stock.product', 'customer', 'credit'])->latest()->get();
+        $sales = Sale::with(['customer', 'saleStock.stock.product'])->latest()
+            ->get();
+
+        // dd($sales);
 
         return Inertia::render('Sales/Index', ['sales' => $sales]);
     }
 
+
+    //* FORM TO CREATE SALE:
     public function create()
     {
+        $stocks = Stock::with('product')
+            ->where('quantity_available', '>', 0)
+            ->get();
 
-        $stocks = Stock::with('product')->where('quantity_available', '>', 0)->get();
-
-        // dd($stocks);
         $customers = Customer::select(['id', 'name'])
             ->orderBy('name')
             ->get();
-        return Inertia::render('Sales/Add', ['stocks' => $stocks, 'customers' => $customers]);
-    }
 
+        return Inertia::render('Sales/Add', [
+            'stocks' => $stocks,
+            'customers' => $customers
+        ]);
+    }
 
     public function store(Request $request)
     {
 
+       
+
+
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'stock_code' => 'nullable|string|max:50',
             'customer_id' => 'nullable|exists:customers,id',
-            'sale_quantity' => 'required|min:0.1',
-            'payment_method' => 'required|string|in:credit,mpesa,cash',
             'sale_date' => 'required|date',
-            'payment_status' => 'required|string|in:paid,unpaid,partial',
-            'amount_paid' => 'required|numeric|min:0',
-        ], [
-            'product_id.required' => 'Product must be selected.',
-            'sale_quantity.min' => 'Quantity should not be Zero '
+            'grand_total' => 'required|numeric|min:0',
+            'payment_status' => 'required|in:paid,unpaid,partial',
+            'payment_balance' => 'required|min:0',
+            'payment_method' => 'required|in:mpesa,cash,credit',
+            'amount_paid' => 'required|min:0',
+            'sale_items' => 'required|array|min:1',
+            'sale_items.*.product_id' => 'required|exists:products,id',
+            'sale_items.*.stock_id' => 'required|exists:stocks,id',
+            'sale_items.*.sale_quantity' => 'required|numeric|min:0.1',
+            'sale_items.*.product_price' => 'required|numeric|min:1',
+            'sale_items.*.total_price' => 'required|numeric|min:1',
         ]);
 
+        // ! check  if sale is credit, customer id is a must.
 
+        if ($validated['payment_status'] !== 'paid' && $validated['customer_id'] == null) {
 
-        //check for invalid payment method
-
-        if ($validated['payment_method'] == 'credit' && $validated['amount_paid'] > 0) {
-            return redirect()->back()->withErrors(['payment_method' => 'Invalid payment method']);
-        } elseif ($validated['payment_method'] !== 'credit' && $validated['amount_paid'] <= 0) {
-            $validated['payment_method'] = 'credit';
-        }
-        // set credit if amount paid 0
-        if ($validated['amount_paid'] == 0) {
-            $validated['payment_status'] = 'unpaid';
-            $validated['payment_method'] = 'credit';
+            return back()->withErrors(['customer_id' => 'For credit sale, customer  must be selected.']);
         }
 
 
 
-        //map to attributes
-        $attributes['stock_id'] = $request['stock_id'];
-        $attributes['customer_id'] = $validated['customer_id'];
-        $attributes['quantity'] = $validated['sale_quantity'];
-        $attributes['price'] = $request['total_price'];
-        $attributes['payment_status'] = $validated['payment_status'];
-        $attributes['date'] = $validated['sale_date'];
+        $finalSaleItems = Sale::groupSaleItem($validated['sale_items']);
 
-        // Handle walk-in customers (when customer_id is null)
-        $customerId = $validated['customer_id'] ?? null;
+        $invoice_number = Sale::generateInvoice();
 
-
-        if ($validated['sale_quantity'] > $request['stock_available']) {
-            redirect()->back()
-                ->withErrors(['sale_quantity' => 'Insufficient stock for the selected product. Available ' . $validated['stock_available']])
-                ->withInput();
-        }
-
-        $init = ($attributes['payment_status'] === 'partial') ? $init = 'PAR' : substr($validated['payment_method'], 0, 3);
-
-
-
-        $date = Date::now()->format('mdH');
-        $code = 'KAY' . Str::upper($init) . $date . Str::upper(Str::random(3));
-
-        // update unique sale code
-        $attributes['code'] = $code;
-
-        // Create the sale
-        $sale = Sale::create($attributes);
-
-
-
+        $sale = Sale::create([
+            'invoice_number' => $invoice_number,
+            'customer_id' => $validated['customer_id'],
+            'date' => $validated['sale_date'],
+            'total' => $validated['grand_total'],
+            'balance' => $validated['payment_balance'],
+            'payment_status' => $validated['payment_status'],
+            'user_id' => Auth::user()->id,
+        ]);
 
         if ($sale) {
-            Summary::updateSummary([
 
-                'opening_stock' => $request["stock_available"],
-                'stock_out' => $attributes["quantity"],
-                'stock_id' => $request["stock_id"],
-                'summary_date' => Date::today()
-            ]);
+          
+
+
+            // update daily summary.
+
+            // Summary::updateSummary([
+            //     'stock_id' => $validated['stock_id'],
+            //     'opening_stock' => ,
+            //     'stock_out',
+            //     'closing_stock',
+            //     'summary_date',
+            // ]);
+
+            // add the sales products 
+            foreach ($finalSaleItems as $item) {
+                SaleStock::create([
+                    'subtotal' => (float) $item['total_price'],
+                    'stock_id' => $item['stock_id'],
+                    'sale_id' => $sale->id,
+                    'quantity' => (float) $item['sale_quantity']
+                ]);
+                Summary::updateSummary([
+                    'stock_id' => $item['stock_id'],
+                    'summary_date' => $validated['sale_date'],
+                    'opening_stock' => $request['quantity_available'],
+                    'stock_out' => $item['sale_quantity'],
+                ]);
+// update stock level after sale.
+                Stock::where('id', $item['stock_id'])->decrement('quantity_available', $item['sale_quantity']);
+            }
+
+            // payment recording
+            if ($validated['payment_status'] !== 'unpaid') {
+                $payment = Payment::create(
+                    [
+                        'sale_id' => $sale->id,
+                        'user_id' => Auth::user()->id,
+                        'method' => $validated['payment_method'],
+                        'balance' => $validated['payment_balance'],
+                        'amount_paid' => $validated['amount_paid'],
+                        'date' => $validated['sale_date'],
+                    ]
+                );
+                
+            }
+           
+            Invoice::generateSaleInvoice( $sale->id);
         }
-
-
-
-        /**
-         * Record the payment if the sale is not unpaid or if the method is not credit.
-         */
-        if ($validated['payment_status'] !== 'unpaid' && $validated['payment_method'] !== 'credit') {
-
-            $sale->recordPayment([
-                'amount_paid' => $validated['amount_paid'],
-                'balance' => $request['payment_balance'],
-                'method' => $request['payment_method'],
-                'reference' => $request->input('reference', null),
-                'notes' => $request->input('notes', null),
-                'payment_date' => $validated['sale_date'],
-            ]);
-        }
-
-
-        //record credit if unpaid or partial
-        if ($validated['payment_status'] === 'unpaid' || $validated['payment_status'] === 'partial') {
-            $due_date = Carbon::parse($validated['sale_date'])->addDays(2);
-
-            $sale->recodCredit([
-                'amount_paid' => $validated['amount_paid'],
-                'balance' => $request['payment_balance'],
-                'due_date' => $due_date,
-                'is_paid' => false,
-            ]);
-        }
-
-
-        // Update stock 
-        Stock::UpdateStock($validated['sale_quantity'], $request['stock_id']);
-
-        //update summary 
-
-
-
-
-        // Generate receipt if paid
-        if ($validated['payment_status']  !== 'unpaid') {
-            $this->generateReceipt($sale);
-        }
-
-
-        return redirect()->route('sale.index')
-            ->with('success', 'Sale recorded successfully!');
+        return redirect()->route('sale.index')->with(['success' => 'Sale recorded successfully']);
     }
 
-    public function show($id)
+    public function show($uuid)
     {
-        $sale = Sale::with(['stock.product', 'customer', 'payments', 'credit'])->findOrFail($id);
+        $id = Sale::where('uuid', $uuid)->value('id');
+        
+        $sale = Sale::with(['customer','payment', 'saleStock.stock.product'])
+            ->find($id);
 
+        // dd($sale);
         return Inertia::render('Sales/Show', ['sale' => $sale]);
-    }
-
-    private function generateReceipt(Sale $sale)
-    {
-        // Your receipt generation logic here
-        // Example: PDF generation, database record, etc.
     }
 }

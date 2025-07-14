@@ -63,9 +63,8 @@ class StockController extends Controller
         return redirect()->route('stock.index')->with(['success' => 'Stock Created Successfully.']);
     }
 
-    public function edit($id)
+    public function edit(Stock $stock)
     {
-        $stock = Stock::findOrFail($id);
         $products = Product::all(['id', 'name']);
 
         return Inertia::render('Stock/Add', [
@@ -113,6 +112,7 @@ class StockController extends Controller
 
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:0',
+            
         ]);
 
 

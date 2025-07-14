@@ -8,6 +8,7 @@ import AuthLayout from '@/layouts/auth-layout';
 import { useForm } from '@inertiajs/react';
 import { Loader2 } from 'lucide-react';
 import { FormEventHandler } from 'react';
+import { Toaster } from 'sonner';
 
 interface Product {
     id: string;
@@ -107,6 +108,8 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
 
     return (
         <AuthLayout title={'New Sale'} description={'Record a new sale below.'}>
+            <Toaster position="top-center" richColors closeButton></Toaster>
+
             <form onSubmit={submit} className="w-full max-w-xl space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     {/* Product Selection */}

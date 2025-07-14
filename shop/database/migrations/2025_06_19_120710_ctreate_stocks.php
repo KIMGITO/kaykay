@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->foreignId('product_id') // singular
                 ->nullable()              // required for nullOnDelete
                 ->constrained('products') // points to the 'products' table

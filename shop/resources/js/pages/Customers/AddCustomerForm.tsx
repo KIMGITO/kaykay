@@ -106,6 +106,7 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
                                 <SelectItem value="Monthly"> {'Monthly'}</SelectItem>
                             </SelectContent>
                         </Select>
+                        {errors.bill_duration && <p className='text-sm font-medium text-destructive'>{ errors.bill_duration}</p>}
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="note">Notes</Label>

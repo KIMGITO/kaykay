@@ -22,12 +22,12 @@ export default defineConfig({
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
-    server: {
-        host: '0.0.0.0', // 🔥 important
-        port: 5173,
-        strictPort: true, // 💥 fail if port is used (optional)
-        hmr: {
-            host: '192.168.1.17', // e.g. 192.168.187.151
-        },
-    },
+    // server: {
+    //     host: '0.0.0.0', // 🔥 important
+    //     port: 5174,
+    //     strictPort: true, // 💥 fail if port is used (optional)
+    //     hmr: {
+    //         host: '192.168.', // e.g. 192.168.187.151
+    //     },
+    // },
 });

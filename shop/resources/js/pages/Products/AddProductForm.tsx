@@ -17,8 +17,8 @@ type ProductData = {
     is_updaterble: boolean,
 };
 
-export default function ProductForm({ initialData }: { initialData?: ProductData & { id?: number } }) {
-    const isEditing = !!initialData?.id;
+export default function ProductForm({ initialData }: { initialData?: ProductData & { uuid?: string } }) {
+    const isEditing = !!initialData?.uuid;
 
    
 
@@ -33,7 +33,7 @@ export default function ProductForm({ initialData }: { initialData?: ProductData
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        const url = isEditing ? route('product.update', initialData?.id) : route('product.store');
+        const url = isEditing ? route('product.update', initialData?.uuid) : route('product.store');
 
         const method = isEditing ? put : post;
         method(url, {

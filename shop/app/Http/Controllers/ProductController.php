@@ -43,6 +43,8 @@ class ProductController extends Controller
     // Show edit form
     public function edit(Product $product)
     {
+        
+
         return Inertia::render('Products/Add', [
             'initialData' => $product,
         ]);

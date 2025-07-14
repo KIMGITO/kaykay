@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->foreignId('stock_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
-            $table->decimal('quantity', 10, 2);
-            $table->decimal('price', 10, 2);
-            
-            $table->enum('payment_status',['paid','unpaid','partial']);
-
-
+            $table->uuid()->unique();
+            $table->string('invoice_number');
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete();
             $table->date('date');
+            $table->enum('payment_status', ['paid', 'unpaid', 'partial']);
+            $table->float('total');
+            $table->float('balance');
+            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('sales');
     }
 };

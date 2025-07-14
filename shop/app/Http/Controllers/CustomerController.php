@@ -29,18 +29,19 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20|unique:customers,phone',
-            'bill_duration' => 'required|in:daily,weekly,monthly|string',
+            'bill_duration' => 'required|in:Daily,Weekly,Monthly',
             'location' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
         ]);
-       
 
+        
         Customer::create($validated);
 
         return redirect()->route('customers.index')->with('success', 'Customer created successfully');
     }
     public function edit(Customer $customer)
     {
+        
         return Inertia::render('Customers/Add', [
             'initialData' => $customer,
         ]);

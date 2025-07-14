@@ -1,4 +1,4 @@
-import ClearPaymnet from '@/components/clearPayment';
+import ClearPayment from '@/components/clearPayment';
 import CreateButton from '@/components/createButton';
 import { Button } from '@/components/ui/button';
 import dateToday from '@/helper/dateToday';
@@ -22,12 +22,18 @@ interface Product {
     name: string;
     unit: string;
 }
+
+interface Stock {
+    product: Product;
+}
+
+
 interface Sale {
     id: number;
     quantity: number;
     price: number;
     date: string;
-    product: Product;
+    stock: Stock;
     customer: Customer;
 }
 
@@ -50,8 +56,8 @@ export default function Index({ credits }: CreditProps) {
     
     const { props } = usePage<{ flash?: { success?: string; undo_id?: string } }>();
 
-    const [message, setMessage] = useState(props.flash?.success || '');
-
+    const [message] = useState(props.flash?.success || '');
+    console.log(dateToday());
     useEffect(() => {
         if (message && typeof message === 'string' && message.trim() !== '') {
             toast.success('Success', {
@@ -68,7 +74,7 @@ export default function Index({ credits }: CreditProps) {
                 <div className="mb-4 flex items-center justify-between">
                     <Toaster position="top-center" richColors closeButton></Toaster>
 
-                    <h2 className="text-xl font-semibold">Credit Sales</h2>
+                    <h2 className="text-xl font-semibold">Pending Bills</h2>
                     <CreateButton toRoute="sale.create" action="New Sale" />
                 </div>
 
@@ -78,6 +84,8 @@ export default function Index({ credits }: CreditProps) {
                             <th className="px-4 py-2 text-left">#</th>
                             <th className="px-4 py-2 text-left">Customer</th>
                             <th className="px-4 py-2 text-left">Product</th>
+                            <th className="px-4 py-2 text-left">Quantity</th>
+
                             <th className="px-4 py-2 text-left">Sale Date</th>
 
                             <th className="px-4 py-2 text-left">Amount</th>
@@ -88,15 +96,14 @@ export default function Index({ credits }: CreditProps) {
                             <th className="px-4 py-2 text-end">Actions</th>
                         </thead>
                         <tbody>
-                            {credits ?
+                            {credits ? (
                                 credits.map((credit, index) => (
-                                    <tr key={index} >
+                                    <tr key={index}>
                                         <td className="px-4 py-2 text-left">{index + 1}</td>
                                         <td className="px-4 py-2 text-left">{credit.sale?.customer?.name || 'Walk-in'}</td>
-                                        <td className="px-4 py-2 text-left">{`${credit.sale?.product?.name.toUpperCase()} 
-                                        (${formatNumber(credit.sale?.quantity)} ${
-                                            credit.sale?.product?.unit.toLowerCase() !== 'unit' ? credit.sale?.product?.unit : ''
-                                        })`}</td>
+                                        
+                                        <td className="px-4 py-2 text-left">{`${formatNumber(credit.sale?.quantity)}  ${credit.sale?.stock.product.unit}`}</td>
+                                        <td className="px-4 py-2 text-left">{credit.sale?.stock.product?.name.toUpperCase()}</td>
                                         <td className="px-4 py-2 text-left">{formatDate(credit.sale?.date)}</td>
                                         <td className="px-4 py-2 text-left text-yellow-500">{formatCurrency(credit.sale?.price)}</td>
                                         <td className="px-4 py-2 text-left text-green-500">{formatCurrency(parseFloat(credit.amount_paid))}</td>
@@ -105,7 +112,7 @@ export default function Index({ credits }: CreditProps) {
                                         <td className="px-4 py-2 text-center">
                                             {credit.due_date == null ? (
                                                 <div> - - </div>
-                                            ) : formatDate(credit.due_date) <= dateToday() ? (
+                                            ) : new Date(credit.due_date) <= new Date() ? (
                                                 <span
                                                     className={`inline-flex items-center rounded bg-red-300 px-2.5 py-0.5 text-xs font-medium text-red-700`}
                                                 >
@@ -121,9 +128,7 @@ export default function Index({ credits }: CreditProps) {
                                         </td>
                                         <td className="px-4 py-2 text-center">
                                             <div className="flex h-full items-center gap-3">
-                                               
-
-                                                <ClearPaymnet
+                                                <ClearPayment
                                                     credit={{
                                                         id: credit.id,
                                                         is_paid: credit.is_paid,
@@ -133,9 +138,8 @@ export default function Index({ credits }: CreditProps) {
                                                             price: credit.sale?.price,
                                                         },
                                                     }}
-                                                ></ClearPaymnet>
+                                                ></ClearPayment>
 
- 
                                                 <Link href={route('credits.show', credit.id)}>
                                                     <Button variant={'ghost'} className="border-2 md:border-0">
                                                         <Receipt className="text-blue-500" />
@@ -144,14 +148,14 @@ export default function Index({ credits }: CreditProps) {
                                             </div>
                                         </td>
                                     </tr>
-                                )) : 
+                                ))
+                            ) : (
                                 <tr>
-                                    <td colSpan={9} className="text-center py-4">
+                                    <td colSpan={9} className="py-4 text-center">
                                         <div className="text-muted-foreground">No credit sales found.</div>
                                     </td>
                                 </tr>
-                            }
-                            
+                            )}
                         </tbody>
                     </table>
                 </div>

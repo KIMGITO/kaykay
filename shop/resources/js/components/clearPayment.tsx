@@ -16,7 +16,7 @@ interface ClearPaymentInterface {
     children?: ReactNode; // Allow anything inside
 }
 
-export default function ClearPaymnet({ credit, children }: ClearPaymentInterface) {
+export default function ClearPayment({ credit, children }: ClearPaymentInterface) {
 
 
 

@@ -14,18 +14,14 @@ return new class extends Migration
 
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sale_id')->nullable()->constrained('sales')->cascadeOnDelete();
-            $table->foreignId('credit_id')->nullable()->constrained('credits')->cascadeOnDelete();
+            $table->uuid()->unique();
+            $table->foreignId('sale_id')->constrained('sales')->cascadeOnDelete();
             $table->decimal('amount_paid', 10, 2);
             $table->decimal('balance', 10, 2);
             $table->enum('method', ['cash', 'mpesa']);
-            $table->string('reference')->nullable();
-            $table->dateTime('payment_date')->useCurrent();
+            $table->dateTime('date');
+            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
-
-            $table->index('sale_id');
-            $table->index('method');
-            $table->index('payment_date');
         });
     }
 
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('payments');
     }
 };

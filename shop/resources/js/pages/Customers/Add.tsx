@@ -6,10 +6,14 @@ interface Props {
     // Add any initial props you might need, like initial customer data for editing
     initialData?: {
         id?: number;
-        name: string;
-        phone?: string;
-        location?: string;
+        first_name: string;
+        last_name: string;
+        home: string;
+        house_number: string;
+        email: string;
         note?: string;
+        bill_duration: string;
+        phone?: string;
     };
 }
 

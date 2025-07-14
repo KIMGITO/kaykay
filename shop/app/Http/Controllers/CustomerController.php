@@ -27,10 +27,13 @@ class CustomerController extends Controller
        
 // TODO: validate customers
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'home' => 'required|string|max:255',
+            'house_number' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email',
             'phone' => 'nullable|string|max:20|unique:customers,phone',
             'bill_duration' => 'required|in:Daily,Weekly,Monthly',
-            'location' => 'nullable|string|max:255',
             'note' => 'nullable|string|max:255',
         ]);
 

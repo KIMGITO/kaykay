@@ -34,8 +34,8 @@ class SaleController extends Controller
             ->where('quantity_available', '>', 0)
             ->get();
 
-        $customers = Customer::select(['id', 'name'])
-            ->orderBy('name')
+        $customers = Customer::select(['id', 'first_name'])
+            ->orderBy('first_name')
             ->get();
 
         return Inertia::render('Sales/Add', [

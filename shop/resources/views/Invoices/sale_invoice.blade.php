@@ -176,14 +176,10 @@
 </head>
 <body>
 
-    <!-- Text Watermark -->
-    {{-- <div class="watermark">KAY KAY'S LA DICHA</div> --}}
-    
-    <!-- Logo Watermark (alternative) -->
     <img class="watermark-logo watermark-1" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/milky.svg'))) }}" alt="Watermark Logo">
     <img class="watermark-logo watermark-2" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/milky.svg'))) }}" alt="Watermark Logo">
 <div class="watermark-logo watermark-1">Hello</div>
-    <!-- Header Section -->
+
     <div class="header">
         <img class="logo" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/milky.svg'))) }}">
         <div class="bold">KAY KAY'S LA DICHA</div>
@@ -289,13 +285,6 @@
 
     
     
-    <!-- Payment Info -->
-    {{-- <table width="100%">
-        <tr>
-            <td>Payment Method: <span class="bold">Till</span></td>
-            <td class="text-right">Transaction ID: <span class="bold">TX634H37</span></td>
-        </tr>
-    </table> --}}
     <table class="totals">
         @php
             $index = 0;
@@ -324,16 +313,15 @@
             <td colspan="2">Status</td>
             <td>{{ $sale->payment_status  }}</td>
         </tr>
+        
     </table>
    
     <!-- Footer -->
     <div class="footer ">
-         <div class="center space-sm">**********</div>
+         <div class="center space-sm bold"> TILL: {{ config('custom.till_number') }}<br>**********</div>
         <div class="bold green space-sm">Thank you for shopping with us!</div>
         <div class="green space-sm">Karibu Tena</div>
         <div class="space"></div>
-        {{-- <div>* Goods sold are not returnable</div>
-         <div>* This is electronically generated. No Stamp needed </div> --}}
         <div>Software by KayKay's</div>
     </div>
 

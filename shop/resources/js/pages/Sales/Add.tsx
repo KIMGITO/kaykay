@@ -48,7 +48,7 @@ interface Stock {
 }
 
 interface Customer {
-    name: string;
+    first_name: string;
     id: string;
 }
 

@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, LogIn } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
@@ -45,7 +45,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <Label htmlFor="email">Email address</Label>
                         <Input
                             id="email"
-                            type="email"
                             required
                             autoFocus
                             tabIndex={1}
@@ -96,11 +95,20 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Button>
                 </div>
 
+                {/* <div className="text-center"> Or</div>/ */}
+
                 <div className="text-center text-sm text-muted-foreground">
                     Don't have an account?{' '}
                     <TextLink href={route('register')} tabIndex={5}>
                         Sign up
                     </TextLink>
+                </div>
+                <div className="text-center"> Or</div>
+
+                <div className="text-center">
+                    <Button size={'sm'} className="w-1/2 gap-5 rounded-full border-2 bg-white text-center text-black hover:bg-amber-300">
+                        <img src="images/google-icon.png" className="h-10/12" /> Continue With Google
+                    </Button>
                 </div>
             </form>
 

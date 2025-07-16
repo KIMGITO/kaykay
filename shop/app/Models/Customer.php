@@ -17,7 +17,7 @@ class Customer extends Model
         'home',
         'house_number',
         'note',
-        'bill_duration',
+        'bill_cycle',
         
     ];
 

@@ -185,7 +185,7 @@
         <div class="bold">KAY KAY'S LA DICHA</div>
         <div>Four Ways Village, Off Kiambu Road</div>
         <div>Tel: {{ config('custom.phone') }}</div>
-        <div class="invoice-title">Sales Invoice</div>
+        <div class="invoice-title"> {{ $sale->payment_status }} Invoice</div>
     </div>
 
     

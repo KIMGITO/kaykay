@@ -48,7 +48,8 @@ export interface Stock {
 
 export interface Customer {
     id: number;
-    name: string;
+    first_name: string;
+    last_name: string;
 }
 
 export interface SaleStock {
@@ -91,7 +92,8 @@ export default function Info({ sale }: SalesProp) {
         code: sale.code,
         date: formatDate(sale.created_at),
         payment_date: sale.payment,
-        name: sale.customer?.name ?? 'Walk - In',
+        last_name: sale.customer?.last_name,
+        first_name: sale.customer?.first_name ?? 'Walk - In',
         item: sale.stock?.product.name,
         qty: `${formatNumber(sale.quantity)} ${sale.stock?.product.unit}`,
         cost: sale.stock?.product.price_per_unit,

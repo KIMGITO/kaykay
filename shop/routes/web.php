@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/billed', [SaleController::class, 'billed'])->name('billed');
     Route::resource('/customers', CustomerController::class); //CRUD
     Route::get('/invoice/{uuid}', [InvoiceController::class, 'show']) -> name('invoice.show');
+    Route::get('/credits', [SaleController::class, 'credits'])->name('sale.credits');
     // Route::resource('/credits', CreditController::class); //CRUD
     // Route::put('/credits/{id}/clear', [CreditController::class, 'clear'])->name('credit.clear'); //CRUD
     // Route::get('/invoices', [CreditController::class, 'invoices'])->name('invoices');

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
@@ -16,6 +17,7 @@ class Sale extends Model
         'total',
         'balance',
         'payment_status',
+        'due_date',
         'user_id',
     ];
 
@@ -25,31 +27,36 @@ class Sale extends Model
     }
 
 
-    public function saleStock(){
+    public function saleStock()
+    {
         return $this->hasMany(SaleStock::class);
     }
-    public function customer(){
+    public function customer()
+    {
         return $this->belongsTo(Customer::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
-    public function payment(){
-        return $this->hasMany(Payment::class,'sale_id');
+    public function payment()
+    {
+        return $this->hasMany(Payment::class, 'sale_id');
     }
 
     //! GENERATE  INVOICE NUMBER
-    public function scopeGenerateInvoice($query){
+    public function scopeGenerateInvoice($query)
+    {
         $last = $this->latest('id')->first();
         $number = $last ? $last->id + 1 : 1;
-        return 'INV-' . str_pad($number, 5, '0', STR_PAD_LEFT); 
-
+        return 'INV-' . str_pad($number, 5, '0', STR_PAD_LEFT);
     }
 
     //! GROUP SIMILAR PRODUCT TO ONE SALE
-    public function scopeGroupSaleItem($query, $saleItems){
-        
+    public function scopeGroupSaleItem($query, $saleItems)
+    {
+
         $grouped = [];
 
         foreach ($saleItems as $item) {
@@ -62,12 +69,11 @@ class Sale extends Model
                 $grouped[$key]['sale_quantity'] += (float) $item['sale_quantity'];
                 $grouped[$key]['total_price'] += (float) $item['total_price'];
             }
-
         }
         return  array_values($grouped);
     }
 
- 
+
 
     protected static function boot()
     {
@@ -78,8 +84,20 @@ class Sale extends Model
             if (empty($model->uuid)) {
                 $model->uuid = Str::uuid();
             }
+            if (empty($model->invoice_number)) {
+                $model->invoice_number = self::generateInvoice();
+            }
+            $model->due_date = (empty($model->due_date) && $model->customer && ($model->payment_status != 'paid')) ?
+                self::calculateDueDate($model->customer->bill_cycle)  : null;
         });
-
-       
+    }
+    protected static function calculateDueDate($bill_cycle)
+    {
+        $now = Carbon::now();
+        return match ($bill_cycle) {
+            'daily' => $now->addHours(3),
+            'weekly' => $now->endOfWeek(),
+            'monthly' => $now->endOfMonth(),
+        };
     }
 }

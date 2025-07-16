@@ -15,7 +15,7 @@ class PaymentController extends Controller
    
     public function store(Request $request)
     {
-
+       
         $validated = $request->validate([
             'sale_id' => 'required|exists:sales,id',
             'amount_paid' => 'required|numeric|min:0.01',

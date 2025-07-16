@@ -48,7 +48,7 @@ interface SaleItem {
 }
 
 interface FormData {
-    customer_id: string;
+    customer_id: number;
     customer_name: string;
     sale_items: SaleItem[];
     payment_method: 'mpesa' | 'cash' | 'credit';
@@ -75,8 +75,8 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
     ]);
 
     const { data, setData, post, errors, processing } = useForm<FormData>({
-        customer_id: '',
-        customer_name: '',
+        customer_id: -1,
+        customer_first_name: '',
         sale_items: saleItems,
         payment_method: 'mpesa',
         sale_date: new Date().toISOString().split('T')[0],
@@ -183,10 +183,11 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
     // Handle customer change
     const handleCustomerChange = (value: string) => {
         const customer = JSON.parse(value);
+        
         setData({
             ...data,
             customer_id: customer?.id || '',
-            customer_name: customer?.name || '',
+            customer_first_name: customer?.first_name || '',
         });
     };
 
@@ -224,6 +225,7 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
 
     // Form submission
     const submit: FormEventHandler = (e) => {
+        console.log(data)
         e.preventDefault();
         if (!productNotEmpty()) {
             console.log('message');
@@ -253,19 +255,19 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
     return (
         <AuthLayout title="New Sale" description="Record a new sale below.">
             <form onSubmit={submit} className="w-full max-w-4xl space-y-4">
-                <Toaster position='top-center' richColors closeButton/>
+                <Toaster position="top-center" richColors closeButton />
                 {/* Customer and Date Section */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="customer_id">Customer</Label>
                         <Select value={data.customer_id} onValueChange={handleCustomerChange} disabled={processing}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Customer" />
+                                <SelectValue placeholder="Customer">{data.customer_first_name}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
                                 {customers.map((customer) => (
                                     <SelectItem key={customer.id} value={JSON.stringify(customer)}>
-                                        {customer.name}
+                                        {customer.first_name}
                                     </SelectItem>
                                 ))}
                                 <div className="mt-4 rounded p-2">
@@ -297,7 +299,7 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
                     {saleItems.map((item, index) => (
                         <div key={index} className="rounded-lg border p-4">
                             <div className="mb-2 flex items-center justify-between">
-                                <h3 className="font-medium">Product  {index + 1}</h3>
+                                <h3 className="font-medium">Product {index + 1}</h3>
                                 {index > 0 && (
                                     <Button type="button" variant="ghost" size="sm" onClick={() => removeProduct(index)} disabled={processing}>
                                         Remove
@@ -335,9 +337,9 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
                                         value={item.sale_quantity === 0 ? '' : item.sale_quantity}
                                         onChange={(e) => {
                                             if (parseFloat(e.target.value) > item.stock_available) {
-                                                e.target.value = item.stock_available.toString()
+                                                e.target.value = item.stock_available.toString();
                                             }
-                                                updateProduct(index, 'sale_quantity', parseFloat(e.target.value) || 0);
+                                            updateProduct(index, 'sale_quantity', parseFloat(e.target.value) || 0);
                                         }}
                                         disabled={processing || !item.product_id}
                                     />
@@ -408,7 +410,7 @@ export default function AddSalesForm({ stocks, customers }: SaleProps) {
                         </div>
 
                         {/* Payment Status */}
-                       
+
                         <div className="space-y-2">
                             <Label>Payment Status</Label>
                             <RadioGroup value={data.payment_status} onValueChange={handlePaymentStatusChange} className="flex gap-4">

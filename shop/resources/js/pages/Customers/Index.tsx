@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import {  Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 
@@ -24,28 +24,28 @@ import { Button } from '@/components/ui/button';
 //     DropdownMenuTrigger,
 // } from '@/components/ui/dropdown-menu';
 import { formatDate } from '@/helper/formatDate';
-import AppLayout from '@/layouts/app-layout';
 import ucfirst from '@/helper/ucfirst';
-import { BreadcrumbItem } from '@/types';
-import { title } from 'process';
+import AppLayout from '@/layouts/app-layout';
 
 interface Customer {
     id: number;
     uuid: string;
-    name: string;
-    type: 'Individual' | 'Business';
+    first_name: string;
+    last_name: string;
     phone: string | null;
-    location: string | null;
+    email: string | null;
+    home: string | null;
+    house_number: string;
     created_at: string;
     note: string;
 }
 
-const breadcrumbs  = [
+const breadcrumbs = [
     {
         title: 'Customers',
-        href: '/customers'
-    }
-]
+        href: '/customers',
+    },
+];
 
 export default function CustomerIndex({ customers }: { customers: Customer[] }) {
     const handleDelete = (id: number) => {
@@ -84,9 +84,9 @@ export default function CustomerIndex({ customers }: { customers: Customer[] }) 
                         <thead className="bg-muted text-muted-foreground">
                             <tr>
                                 <th className="px-4 py-2 text-left">Name</th>
-                                <th className="px-4 py-2 text-left">Phone</th>
-                                <th className="px-4 py-2 text-left">Location</th>
-                                <th className="px-4 py-2 text-left">Created</th>
+                                <th className="px-4 py-2 text-left">Contacts</th>
+                                <th className="px-4 py-2 text-left">Address</th>
+                                <th className="px-4 py-2 text-left">Joined On</th>
                                 <th className="px-4 py-2 text-left">Note</th>
                                 <th className="px-4 py-2 text-left">Actions</th>
                             </tr>
@@ -95,10 +95,19 @@ export default function CustomerIndex({ customers }: { customers: Customer[] }) 
                             {customers &&
                                 customers.map((customer) => (
                                     <tr key={customer.id} className="border-t transition hover:bg-accent">
-                                        <td className="px-4 py-2 font-medium">{ucfirst(customer.name)}</td>
+                                        <td className="px-4 py-2 font-medium">
+                                            {ucfirst(customer.first_name)}
+                                            <br />
+                                            {ucfirst(customer.last_name)}
+                                        </td>
 
-                                        <td className="px-4 py-2">{customer.phone || '-'}</td>
-                                        <td className="px-4 py-2">{customer.location || '-'}</td>
+                                        <td className="px-4 py-2">
+                                            {customer.phone} <br />
+                                            {customer.email}
+                                        </td>
+                                        <td className="px-4 py-2">
+                                            {ucfirst(customer.home || '--') } <br /> {'House Number: '} {customer.house_number || '--'}
+                                        </td>
                                         <td className="px-4 py-2">{formatDate(customer.created_at)}</td>
                                         <td className="px-4 py-2">{customer.note}</td>
                                         <td>

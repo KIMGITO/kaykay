@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('phone');
             $table->string('email') -> nullable();
-            $table->string('home');
+            $table->string('home')->nullable();
             $table->string('house_number')->nullable();
             $table->string('note')->nullable();
-            $table->enum('bill_duration', ['daily', 'weekly', 'monthly'])->default('daily');
+            $table->enum('bill_cycle', ['daily', 'weekly', 'monthly'])->default('daily');
             $table->timestamps();
             $table->index('uuid');
         });

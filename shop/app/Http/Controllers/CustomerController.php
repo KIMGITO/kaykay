@@ -29,12 +29,12 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'home' => 'required|string|max:255',
+            'home' => 'nullable|string|max:255',
             'house_number' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255|unique:customers,email',
-            'phone' => 'nullable|string|max:20|unique:customers,phone',
-            'bill_duration' => 'required|in:Daily,Weekly,Monthly',
-            'note' => 'nullable|string|max:255',
+            'phone' => 'required|string|max:20|unique:customers,phone',
+            'bill_cycle' => 'required|in:daily,weekly,monthly',
+            'note' => 'nullable|string|min:10|max:255',
         ]);
 
         
@@ -53,10 +53,16 @@ class CustomerController extends Controller
     public function update(Request $request, Customer $customer)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'note' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20| unique:customers,phone,'.$customer->id,
-            'location' => 'nullable|string|max:255',
+            
+
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'home' => 'nullable|string|max:255',
+            'house_number' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email,'. $customer->id,
+            'phone' => 'nullable|string|max:20| unique:customers,phone,' . $customer->id,
+            'bill_cycle' => 'required|in:daily,weekly,monthly',
+            'note' => 'nullable|string|min:10|max:255',
         ]);
 
         $customer->update($validated);

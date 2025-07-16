@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('payment_status', ['paid', 'unpaid', 'partial']);
             $table->float('total');
             $table->float('balance');
+            $table->date('due_date')->nullable();
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });

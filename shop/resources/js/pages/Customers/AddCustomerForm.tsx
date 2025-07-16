@@ -10,13 +10,15 @@ import AuthLayout from '@/layouts/auth-layout';
 import { toast } from 'sonner';
 
 type CustomerFormData = {
+    id: number;
+    uuid: string;
     first_name: string;
     last_name: string;
     home: string;
     house_number: string;
     email: string;
     note?: string;
-    bill_duration: string;
+    bill_cycle: string;
     phone?: string;
 };
 
@@ -24,20 +26,22 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
     const isEditing = Boolean(initialData?.id);
 
     const { data, setData, post, put, processing, errors, reset } = useForm<CustomerFormData>({
+        id: initialData?.id ?? -1,
+        uuid: initialData?.uuid ?? '',
         first_name: initialData?.first_name ?? '',
         last_name: initialData?.last_name ?? '',
         email: initialData?.email ?? '',
         home: initialData?.home ?? '',
         house_number: initialData?.house_number ?? '',
         phone: initialData?.phone ?? '',
-        bill_duration: initialData?.bill_duration ?? 'Daily',
+        bill_cycle: initialData?.bill_cycle ?? 'Daily',
         note: initialData?.note ?? '',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         if (isEditing) {
-            put(route('customers.update', initialData?.id));
+            put(route('customers.update', initialData?.uuid));
         } else {
             post(route('customers.store'), {
                 onSuccess: () => {
@@ -141,20 +145,20 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
                     </div>
                     <div className="grid grid-cols-2 gap-1">
                         <div>
-                            <Label className="mb-2" htmlFor="bill_duration">
+                            <Label className="mb-2" htmlFor="bill_cycle">
                                 Bill Duration.
                             </Label>
-                            <Select onValueChange={(value) => setData('bill_duration', value)}>
+                            <Select onValueChange={(value) => setData('bill_cycle', value)}>
                                 <SelectTrigger>
-                                    <SelectValue>{data.bill_duration || 'Bill Duration.'}</SelectValue>
+                                    <SelectValue placeholder={data.bill_cycle}>{data.bill_cycle || 'Bill Duration.'}</SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Daily">{' Daily'}</SelectItem>
-                                    <SelectItem value="Weekly"> {'Weekly'}</SelectItem>
-                                    <SelectItem value="Monthly"> {'Monthly'}</SelectItem>
+                                    <SelectItem value="daily">{' Daily'}</SelectItem>
+                                    <SelectItem value="weekly"> {'Weekly'}</SelectItem>
+                                    <SelectItem value="monthly"> {'Monthly'}</SelectItem>
                                 </SelectContent>
                             </Select>
-                            {errors.bill_duration && <p className="text-sm font-medium text-destructive">{errors.bill_duration}</p>}
+                            {errors.bill_cycle && <p className="text-sm font-medium text-destructive">{errors.bill_cycle}</p>}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="note">Notes</Label>
@@ -164,7 +168,7 @@ export default function CustomerForm({ initialData }: { initialData?: CustomerFo
                                 onChange={(e) => setData('note', e.target.value)}
                                 disabled={processing}
                                 placeholder="Additional notes about the customer"
-                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                             />
                             {errors.note && <p className="text-sm font-medium text-destructive">{errors.note}</p>}
                         </div>

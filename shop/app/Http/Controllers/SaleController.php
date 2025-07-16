@@ -77,10 +77,9 @@ class SaleController extends Controller
 
         $finalSaleItems = Sale::groupSaleItem($validated['sale_items']);
 
-        $invoice_number = Sale::generateInvoice();
+      
 
         $sale = Sale::create([
-            'invoice_number' => $invoice_number,
             'customer_id' => $validated['customer_id'],
             'date' => $validated['sale_date'],
             'total' => $validated['grand_total'],
@@ -151,5 +150,12 @@ class SaleController extends Controller
 
         // dd($sale);
         return Inertia::render('Sales/Show', ['sale' => $sale]);
+    }
+
+    public function credits(){
+        $credits =  Sale::with(['customer', 'saleStock.stock.product'])->wherein('payment_status', ['unpaid', 'partial'])->latest()
+            ->get();
+
+        return Inertia::render('Credits/Index', ['sales' => $credits]);
     }
 }

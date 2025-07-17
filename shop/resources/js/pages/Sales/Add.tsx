@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';import SaleForm from './AddSalesForm';
+import { Head } from '@inertiajs/react';
 import AddSalesForm from './AddSale';
 
 // interface Product {
@@ -58,6 +58,10 @@ interface SaleProps {
 }
 
 const breadcrumb = [
+    {
+        title: 'HOME',
+        href: '/dashboard',
+    },
     {
         title: 'Sales',
         href: '/sale',

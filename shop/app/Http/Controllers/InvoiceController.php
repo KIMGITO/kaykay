@@ -12,10 +12,12 @@ class InvoiceController extends Controller
     public function show($uuid){
 
         $sale = Sale::with(['payment',  'saleStock.stock.product', 'customer', 'user'])
+
         ->where('uuid', $uuid)->first();
+        // dd($sale->customer);
         $items = $sale->saleStock;
         $payment = $sale->payment;
-        $height = 500 + $items->count() * 18.4 + $payment->count()*12;
+        $height = 510 + $items->count() * 18.4 + $payment->count()*12;
         $height = $height > 800 ? 800 : $height;
 
         // dd($sale);
@@ -31,6 +33,7 @@ class InvoiceController extends Controller
                 'margin-left' => 0,
             ]);
 
+        // dd($sale->invoice_number);
         return $pdf->stream("{$sale->invoice_number}.pdf");
 
         // Invoice::generateSaleInvoice(10);

@@ -3,6 +3,7 @@ import { Euro, Receipt } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 
+import CreateButton from '@/components/createButton';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { BreadcrumbItem } from '@/components/ui/breadcrumb';
@@ -19,13 +20,13 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency } from '@/helper/formatCurrency';
 import { formatDate } from '@/helper/formatDate';
 import ucfirst from '@/helper/ucfirst';
 import AppLayout from '@/layouts/app-layout';
-import CreateButton from '@/components/createButton';
 
 interface Product {
     id: number;
@@ -75,7 +76,16 @@ interface Sale {
 }
 
 interface SalesProp {
-    sales: Sale[];
+    sales?: {
+        data: Sale[];
+        current_page: number;
+        last_page: number;
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
+    };
 }
 
 const breadcrumb: BreadcrumbItem[] = [
@@ -142,7 +152,6 @@ export default function SaleIndex({ sales }: SalesProp) {
             router.delete(route('sales.destroy', id), {
                 onSuccess: () => toast.success('Sale deleted successfully'),
                 onError: () => console.error,
-
             });
         }
     };
@@ -192,8 +201,8 @@ export default function SaleIndex({ sales }: SalesProp) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {sales.length > 0 ? (
-                                sales.map((sale) => (
+                            {sales?.data && sales.data.length > 0 ? (
+                                sales.data.map((sale) => (
                                     <TableRow key={sale.id} className="hover:text-primary">
                                         <TableCell className="whitespace-nowrap">{formatDate(sale.date)}</TableCell>
                                         <TableCell>{sale.invoice_number}</TableCell>
@@ -318,6 +327,39 @@ export default function SaleIndex({ sales }: SalesProp) {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Pagination */}
+                {sales && sales.last_page > 1 && (
+                    <Pagination className="mt-4">
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    href={sales.current_page > 1 ? route('sale.index', { page: sales.current_page - 1 }) : '#'}
+                                    className={sales.current_page <= 1 ? 'cursor-not-allowed opacity-50' : ''}
+                                />
+                            </PaginationItem>
+
+                            {sales.links.slice(1, -1).map((link, index) => (
+                                <PaginationItem key={index}>
+                                    <PaginationLink
+                                        href={link.url || '#'}
+                                        isActive={link.active}
+                                        className={!link.url ? 'cursor-not-allowed opacity-50' : ''}
+                                    >
+                                        {link.label}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    href={sales.current_page < sales.last_page ? route('sale.index', { page: sales.current_page + 1 }) : '#'}
+                                    className={sales.current_page >= sales.last_page ? 'cursor-not-allowed opacity-50' : ''}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
         </AppLayout>
     );

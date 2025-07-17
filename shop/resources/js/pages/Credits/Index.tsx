@@ -183,9 +183,9 @@ export default function SaleIndex({ sales }: SalesProp) {
                             <TableRow className="rounded-2xl hover:text-primary">
                                 <TableHead>Sale date</TableHead>
                                 <TableHead>Due date</TableHead>
-                                <TableHead>Invoice</TableHead>
+                                <TableHead>Invoice No</TableHead>
                                 <TableHead>Products</TableHead>
-                                <TableHead>Customer</TableHead>
+                                <TableHead>Customer Name</TableHead>
                                 <TableHead className="text-right">Total</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Actions</TableHead>
@@ -197,7 +197,6 @@ export default function SaleIndex({ sales }: SalesProp) {
                                     <TableRow key={sale.id} className="hover:text-primary">
                                         <TableCell className="whitespace-nowrap">{formatDate(sale.date)}</TableCell>
                                         <TableCell className="whitespace-nowrap">{formatDate(sale.due_date) || '--'}</TableCell>
-
                                         <TableCell>{sale.invoice_number}</TableCell>
                                         <TableCell>
                                             <ul className="">
@@ -312,7 +311,7 @@ export default function SaleIndex({ sales }: SalesProp) {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                                    <TableCell colSpan={8} className="py-8 text-center text-gray-500">
                                         No credit records found
                                     </TableCell>
                                 </TableRow>

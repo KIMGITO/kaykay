@@ -28,6 +28,10 @@ interface AllSummariesProp {
 
 const breadcrumb = [
     {
+        title: 'HOME',
+        href: '/dashboard'
+    },
+    {
         title: 'Daily Summaries',
         href: '/summaries'
     }

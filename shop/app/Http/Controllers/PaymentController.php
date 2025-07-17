@@ -15,7 +15,7 @@ class PaymentController extends Controller
    
     public function store(Request $request)
     {
-       
+        // dd($request);
         $validated = $request->validate([
             'sale_id' => 'required|exists:sales,id',
             'amount_paid' => 'required|numeric|min:0.01',
@@ -37,7 +37,7 @@ class PaymentController extends Controller
 
         $payment_status = $request['new_balance'] == 0 ? 'paid' : 'partial';
         Sale::where('id', $validated['sale_id'])->update(['balance'=> $request['new_balance'],'payment_status' => $payment_status ]);
-        return redirect()->route('sale.index');
+        return redirect()->route('sale.credits');
     }
      
 }

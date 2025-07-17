@@ -19,7 +19,7 @@ class SaleController extends Controller
     public function index()
     {
         $sales = Sale::with(['customer', 'saleStock.stock.product'])->latest()
-            ->get();
+            ->paginate(6);
 
         // dd($sales);
 

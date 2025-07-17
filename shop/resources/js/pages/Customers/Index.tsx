@@ -42,6 +42,10 @@ interface Customer {
 
 const breadcrumbs = [
     {
+        title: 'HOME',
+        href: '/dashboard',
+    },
+    {
         title: 'Customers',
         href: '/customers',
     },

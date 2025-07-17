@@ -42,7 +42,7 @@
             
             transform: translate(-50%, -50%) rotate(-30deg);
             z-index: -1;
-            opacity: 0.08;
+            opacity: 0.06;
             color: green;
             width: 300px;
             height: auto;
@@ -88,12 +88,12 @@
         }
         
         .items-table th {
-            text-align: left;
+            /* text-align: center; */
             padding-bottom: 3px;
             border-bottom: 1px solid #000;
         }
         
-        .items-table td {
+      items-table td {
             padding: 2px 0;
             vertical-align: top;
         }
@@ -114,8 +114,8 @@
         }
         
         .col-total {
-            width: 30%;
-            text-align: right;
+            width: 25%;
+            text-align: left;
         }
         
         .totals {
@@ -147,6 +147,9 @@
         .text-center {
             text-align: center;
         }
+        .text-left {
+            text-align: left;
+        }
 
         .uppercase {
             text-transform: capitalize;
@@ -168,11 +171,16 @@
         .space-sm {
              margin-top: 15px;
         }
+        .large{
+            font-size: 16px;
+            font-weight: bold;
+        }
         .green{
            
             color: green;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
@@ -184,8 +192,8 @@
         <img class="logo" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/milky.svg'))) }}">
         <div class="bold">KAY KAY'S LA DICHA</div>
         <div>Four Ways Village, Off Kiambu Road</div>
-        <div>Tel: {{ config('custom.phone') }}</div>
-        <div class="invoice-title"> {{ $sale->payment_status }} Invoice</div>
+        <div > <span style="font-family: 'DejaVu Sans', sans-serif;">☎</span>  {{ config('custom.phone') }}</div>
+        <div class="invoice-title"> Sale Recipt</div>
     </div>
 
     
@@ -215,7 +223,7 @@
     
     <!-- Customer Info -->
    @if($sale->customer != null)
-    <div class="bold uppercase">Customer: {{ Str::upper(value: $sale->customer->name || 'walk in') }}</div>
+    <div class="bold uppercase">Customer: {{ $sale->customer->first_name }} {{ $sale->customer->last_name }}</div>
     <div class="bold">Customer No: {{ $sale->customer->id }}</div>
     <div>Tel: {{ $sale->customer->phone }}</div>
    @else
@@ -232,10 +240,10 @@
     <table class="items-table space-sm">
         <thead>
             <tr>
-                <th class="col-desc">Description</th>
+                <th class="col-desc text-left">Description</th>
                 <th class="col-price">Price</th>
                 <th class="col-qty">Qty</th>
-                <th class="col-total">Amt. Ksh</th>
+                <th class="col-total text-right">Amt. Ksh</th>
             </tr>
         </thead>
         <tbody>
@@ -245,7 +253,7 @@
                 <td class="col-desc">{{ Str::upper($item->stock->product->name) }}</td>
                 <td class="col-price">{{ $item->stock->product->price_per_unit }}</td>
                 <td class="col-qty">{{ $item->quantity }}</td>
-                <td class="col-total">{{ numfmt_format_currency($fmt,$item->subtotal,'ksh') }}</td>
+                <td class="col-total text-right">{{ numfmt_format_currency($fmt,$item->subtotal,'ksh') }}</td>
             </tr>
             @endforeach
 
@@ -320,7 +328,7 @@
     <div class="footer ">
          <div class="center space-sm bold"> TILL: {{ config('custom.till_number') }}<br>**********</div>
         <div class="bold green space-sm">Thank you for shopping with us!</div>
-        <div class="green space-sm">Karibu Tena</div>
+        <div class="green space-sm large">KARIBU TENA !</div>
         <div class="space"></div>
         <div>Software by KayKay's</div>
     </div>

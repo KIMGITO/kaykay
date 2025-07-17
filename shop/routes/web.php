@@ -9,6 +9,7 @@ use App\Http\Controllers\CreditController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SummaryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\InvoiceController;
 
@@ -21,7 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //     return Inertia::render('dashboard');
     // })->name('dashboard');
 
-    Route::get('dashboard', [ProductController::class, 'index'])->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('product', ProductController::class); // CRUD
     Route::patch('/product/{product}/toggle', [ProductController::class, 'toggle'])->name('product.toggle');

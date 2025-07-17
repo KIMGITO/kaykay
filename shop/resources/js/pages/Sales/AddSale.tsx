@@ -20,7 +20,7 @@ interface Product {
 interface Stock {
     id: string;
     receipt: string;
-    quantity_received: number;
+    quantity_received: string;
     quantity_available: number;
     product: Product;
 }

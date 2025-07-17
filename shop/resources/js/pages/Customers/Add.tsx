@@ -5,19 +5,24 @@ import CustomerForm from './AddCustomerForm';
 interface Props {
     // Add any initial props you might need, like initial customer data for editing
     initialData?: {
-        id?: number;
+        id: number;
+        uuid: string;
         first_name: string;
         last_name: string;
         home: string;
         house_number: string;
         email: string;
         note?: string;
-        bill_duration: string;
+        bill_cycle: string;
         phone?: string;
     };
 }
 
 const breadcrumbs = [
+    {
+        title: 'HOME',
+        href: '/dashboard',
+    },
     {
         title: 'Customers',
         href: '/customers',

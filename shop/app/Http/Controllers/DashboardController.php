@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
 
         // Get dashboard chart data from database
-        $from = Carbon::now()->subDays(7)->startOfDay();  // Include full first day
+        $from = Carbon::now()->subDays(6)->startOfDay();  // Include full first day
         $to = Carbon::now()->endOfDay();                  // Include full current day
 
         // Get summarized data grouped by date
@@ -51,9 +51,8 @@ class DashboardController extends Controller
 
             if (isset($dailySummary[$day])) {  
                 foreach ($dailySummary[$day] as $product) {
-                    // $dayEntry[] = $product->stock->product->name; 
 
-                    foreach($stocks as $stock ){
+                    foreach($stocks as $stock ){    
                         if($product->stock_id == $stock->id){
                             $dayEntry[$stock->product->name] = $product->stock_out;
                         }

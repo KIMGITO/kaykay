@@ -116,7 +116,7 @@ class StockController extends Controller
         ]);
 
 
-        $stock->where('id', $id)->increment('quantity_available', $validated['quantity']);
+        $stock->where('id', operator: $id)->incrementEach(['quantity_available'=> $validated['quantity'], 'quantity_received' => $validated['quantity']]);
 
 
         // update summary closing if available.

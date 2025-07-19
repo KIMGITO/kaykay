@@ -16,7 +16,17 @@ export default function DashboardMain({ data }) {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [timeRange, setTimeRange] = useState<string>('week');
    const keys = Object.keys(data[0]).filter((k) => k !== 'day');
-   const generateColor = (i) => `hsl(${(i * 60) % 360}, 90%, 55%)`;
+
+   const generateColor = (i) => {
+       const hue = (i * 137.508) % 360; // Golden angle approximation to spread colors
+       return `hsl(${hue}, 70%, 55%)`;
+   };
+
+   const colors = keys.reduce((acc, key, i) => {
+       acc[key] = generateColor(i);
+       return acc;
+   }, {});
+
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {/* Left Column */}

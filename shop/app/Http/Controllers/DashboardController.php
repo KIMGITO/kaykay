@@ -65,6 +65,11 @@ class DashboardController extends Controller
            $weeklySalesData[] = $dayEntry; 
         }
 
+
+        // Inventory status data
+
+        $stock_levels = Stock::with(['product'])->get(['id','quantity_received', 'quantity_available', 'source', 'date']);
+
         
 
         $totalCustomers = Customer::count();

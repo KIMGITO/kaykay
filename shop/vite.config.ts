@@ -27,7 +27,8 @@ export default defineConfig({
         port: 5175,
         strictPort: false, // 💥 fail if port is used (optional)
         hmr: {
-            host: '192.168.100.42', // e.g. 192.168.187.151
+            // host: '192.168.100.42', // e.g. 192.168.187.151
+            host: 'localhost'
         },
     },
 });

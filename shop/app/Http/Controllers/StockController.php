@@ -34,7 +34,7 @@ class StockController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity_received' => 'required|numeric|min:0.1',
             'date' => 'required|date',
-            'source' => 'nullable|string|min:3',
+            'source' => 'required|string|min:3',
         ]);
 
         $validated['quantity_available'] = $validated['quantity_received'];
@@ -82,7 +82,7 @@ class StockController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity_received' => 'required|numeric|min:0',
             'date' => 'required|date',
-            'source' => 'nullable|string|max:255',
+            'source' => 'required|string|max:255',
         ]);
 
         $stock->update($data);

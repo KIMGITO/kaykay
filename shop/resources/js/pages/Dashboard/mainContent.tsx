@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { en } from 'zod/v4/locales';
 import { usePage } from '@inertiajs/react';
+import { CustomProgress } from '@/components/ui/customProgress';
 
 export default function DashboardMain({ data }) {
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -148,7 +149,7 @@ export default function DashboardMain({ data }) {
                             <CardTitle className="text-lg">Inventory Alerts</CardTitle>
                             <CardDescription>Items needing attention</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-3 p-4">
+                        <CardContent className="space-y-3 p-4 flex">
                             {inventoryStatus
                                 .filter((i) => i.status !== 'good')
                                 .map((item) => {
@@ -160,7 +161,7 @@ export default function DashboardMain({ data }) {
 
                                     return (
                                         <div key={item.id} className="space-y-1">
-                                            <div className="flex items-center justify-between text-sm">
+                                            <div className="grid items-center text-sm">
                                                 <span className="font-medium">{item.item}</span>
                                                 <span
                                                     className={`font-semibold ${statusColor === 'bg-red-500' ? 'text-red-600' : 'text-yellow-600'}`}
@@ -168,8 +169,9 @@ export default function DashboardMain({ data }) {
                                                     {item.stock} {item.unit}
                                                 </span>
                                             </div>
-                                            <Progress value={item.stock} className="h-1" color={statusColor} />
-                                            <div className="flex justify-between text-xs text-muted-foreground">
+                                            {/* <Progress value={item.stock} className="h-4" color={statusColor} /> */}
+                                            <CustomProgress value={item.stock} direction='vertical' className="w-15 rounded-0"/>
+                                            <div className="grid text-xs text-muted-foreground">
                                                 <span>Last restock: {item.lastRestock}</span>
                                                 <span>{item.supplier}</span>
                                             </div>

@@ -110,14 +110,15 @@ class StockController extends Controller
 
     public function updateQty(Request $request, Stock $stock,  $id)
     {
+       
 
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:0',
-            
+            'source' => 'required|string|max:50' ,
         ]);
 
 
-        $stock->where('id', operator: $id)->update(['date' => Carbon::now()]);
+        $stock->where('id', operator: $id)->update(['date' => Carbon::now(), 'source' => $validated['source']]);
         $stock->incrementEach(['quantity_available'=> $validated['quantity'], 'quantity_received' => $validated['quantity']]);
         
 

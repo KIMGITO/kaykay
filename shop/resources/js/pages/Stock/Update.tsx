@@ -34,8 +34,11 @@ export default function ({ stock }: StockProp) {
 
     const { data, processing, put, setData, errors } = useForm({
         quantity: 0,
+        source: '',
         total_quantity: stock.quantity_available,
     });
+
+
 
     const handleChange = (e: string) => {
         const v = parseFloat(e);
@@ -43,7 +46,8 @@ export default function ({ stock }: StockProp) {
         if (!isNaN(value)) {
             const totalQty = Number(value) < 0 ? stock.quantity_available : Number(value) + Number(stock.quantity_available);
 
-            setData({ quantity: value < 0 ? 0 : value, total_quantity: totalQty });
+            setData('quantity', value < 0 ? 0 : value);
+            setData('total_quantity', totalQty);
         } else {
             setData('quantity', 0);
         }
@@ -104,6 +108,21 @@ export default function ({ stock }: StockProp) {
                                 <div className="px-4 pt-2 text-end text-xs">
                                     New Stock Quantity: {data.total_quantity} {stock.product.unit}
                                 </div>
+                            </div>
+
+                            <div className="gap-4">
+                                <Label htmlFor="source">Source</Label>
+                                <Input
+                                    value={data.source}
+                                    onChange={(e) => {
+                                        setData('source', e.target.value);
+                                    }}
+                                    id="source"
+                                    disabled={false}
+                                    className="mt-2"
+                                />
+                                <InputError message={errors.source} />
+                                
                             </div>
 
                             <Button type="submit" disabled={processing}>

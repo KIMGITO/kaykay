@@ -30,6 +30,7 @@ export default function MilkBarDashboard() {
         debtors,
         targetAchievement,
         targetCustomers,
+        weeklySalesData,
     } = usePage().props as unknown as {
         totalCustomers: number;
         todaySales: number;
@@ -42,7 +43,8 @@ export default function MilkBarDashboard() {
         totalDebts: number;
         debtors: number;
         targetAchievement: number;
-        targetCustomers:number;
+            targetCustomers: number;
+            weeklySalesData: [];
     };
 
     const summary = {
@@ -58,6 +60,7 @@ export default function MilkBarDashboard() {
         debtors: debtors,
         targetAchievement: targetAchievement,
         targetCustomers: targetCustomers,
+        weeklySalesData: weeklySalesData,
     };
 
     console.log(summary.totalCustomers);
@@ -76,7 +79,7 @@ export default function MilkBarDashboard() {
                     <DashboardStatusCards data={summary} />
 
                     {/* Main Content - More compact layout */}
-                    <DashboardMain />
+                    <DashboardMain data={weeklySalesData} />
 
                     {/* Bottom Section - More compact tables */}
                     <DashboardBottom />

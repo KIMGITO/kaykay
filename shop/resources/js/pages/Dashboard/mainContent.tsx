@@ -10,29 +10,13 @@ import { debtors, inventoryStatus, monthlyTrendData, popularItems, weeklySalesDa
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { en } from 'zod/v4/locales';
+import { usePage } from '@inertiajs/react';
 
-export default function DashboardMain() {
+export default function DashboardMain({ data }) {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [timeRange, setTimeRange] = useState<string>('week');
-    // const [activeTab, setActiveTab] = useState<string>('sales');
-
-    // const CustomTooltip = ({ active, payload, label }: any) => {
-    //     if (active && payload && payload.length) {
-    //         return (
-    //             <div className="rounded-lg border bg-background p-4 shadow-sm">
-    //                 <p className="font-medium">{label}</p>
-    //                 {payload.map((entry: any, index: number) => (
-    //                     <p key={index} className="flex items-center" style={{ color: entry.color }}>
-    //                         <span className="mr-2 h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-    //                         {entry.name}: <span className="ml-1 font-semibold">Ksh {entry.value.toLocaleString()}</span>
-    //                     </p>
-    //                 ))}
-    //             </div>
-    //         );
-    //     }
-    //     return null;
-    // };
-
+   const keys = Object.keys(data[0]).filter((k) => k !== 'day');
+   const generateColor = (i) => `hsl(${(i * 60) % 360}, 90%, 55%)`;
     return (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {/* Left Column */}
@@ -63,45 +47,52 @@ export default function DashboardMain() {
                     </CardHeader>
                     <CardContent className="h-64 p-4 pt-0">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={weeklySalesData}>
+                            <AreaChart data={data}>
                                 <CartesianGrid strokeDasharray="2" vertical={false} stroke="#4a5565" />
-                                <XAxis dataKey="day" tickLine={true} axisLine={false} tickMargin={5} tick={{ fontSize: 12 }} />
-                                <YAxis tickLine={false} axisLine={false} tickFormatter={(v) => `Ksh ${v / 1000}`} tick={{ fontSize: 12 }} />
+                                <XAxis dataKey="day" tickLine axisLine={false} tickMargin={5} tick={{ fontSize: 12 }} />
+                                <YAxis tickLine={false} tick={{ textAnchor: 'end', fontSize: 11 }} axisLine={false} />
                                 <Tooltip
                                     content={({ active, payload, label }) =>
                                         active && payload?.length ? (
-                                            <div className="rounded-md border bg-secondary/90 p-1 text-xm shadow-2xl">
-                                                <p className="text-xs ">{label}</p>
+                                            <div className="rounded-md border bg-secondary/90 p-1 text-xs shadow-2xl">
+                                                <p className="mb-1 text-[11px] font-medium">{label}</p>
                                                 {payload
-                                                    .slice() // clone array to avoid mutating original
-                                                    .sort((a, b) => b.value - a.value) // sort descending
+                                                    .slice()
+                                                    .sort((a, b) => b.value - a.value)
                                                     .map((entry, i) => (
-                                                        <p key={i} className={`${entry.name=='cakes'?'text-green-600' : entry.name == 'milk' ? 'text-red-600' : entry.name == 'mala' ? 'text-blue-600' :entry.name == 'eggs' ? 'text-pink-600' : ''}`}>
-                                                            {entry.name}: <span className={`text-xs text-white`}>Ksh{entry.value}</span>
+                                                        <p key={i} className="flex items-center gap-1" style={{ color: generateColor(i) }}>
+                                                            <span>{entry.name}:</span>
+                                                            <span className="text-white">Ksh{entry.value}</span>
                                                         </p>
                                                     ))}
                                             </div>
                                         ) : null
                                     }
                                 />
-                                <Area type="monotone" dataKey="mala" stroke="#155dfc" fill="#155dfc" fillOpacity={0.18} strokeWidth={1} />
-                                <Area type="monotone" dataKey="milk" stroke="#fb2c36" fill="#fb2c36" fillOpacity={0.24} strokeWidth={1} />
-                                <Area type="monotone" dataKey="cakes" stroke="#05df72" fill="#05df72" fillOpacity={0.24} strokeWidth={1} />
-                                <Area type="monotone" dataKey="eggs" stroke="#fb64b6" fill="#fb64b6" fillOpacity={0.24} strokeWidth={1} />
+
+                                {keys.map((key, i) => (
+                                    <Area
+                                        key={key}
+                                        type="monotone"
+                                        dataKey={key}
+                                        stroke={generateColor(i)}
+                                        fill={generateColor(i)}
+                                        fillOpacity={0.25}
+                                        strokeWidth={1}
+                                    />
+                                ))}
                             </AreaChart>
                         </ResponsiveContainer>
                     </CardContent>
 
                     <CardFooter className="flex items-center justify-between p-4 pt-0 text-sm">
-                        <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-green-400"></div>
-                            <span>Cakes</span>
-                            <div className="ml-4 h-2 w-2 rounded-full bg-red-500"></div>
-                            <span>Milk</span>
-                            <div className="ml-4 h-2 w-2 rounded-full bg-blue-500"></div>
-                            <span>Mala</span>
-                            <div className="ml-4 h-2 w-2 rounded-full bg-pink-500"></div>
-                            <span>Eggs</span>
+                        <div className="flex flex-wrap items-center gap-4">
+                            {keys.map((key, i) => (
+                                <div key={key} className="flex items-center gap-1">
+                                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: generateColor(i) }}></div>
+                                    <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                                </div>
+                            ))}
                         </div>
                         <span className="font-medium">+18% vs last year</span>
                     </CardFooter>

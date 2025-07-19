@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
 
         // Get dashboard chart data from database
-        $from = Carbon::now()->subDays(6)->startOfDay();  // Include full first day
+        $from = Carbon::now()->subDays(7)->startOfDay();  // Include full first day
         $to = Carbon::now()->endOfDay();                  // Include full current day
 
         // Get summarized data grouped by date
@@ -39,12 +39,12 @@ class DashboardController extends Controller
             $currentDay->addDay();
         }
 
-        $data = [];
+       $weeklySalesData = [];
 
         $stocks = Stock::with(['product'])->get();
       
         foreach ($chartDays as $day) {
-            $dayEntry['day'] = $day;
+            $dayEntry['day'] = Carbon::parse($day)->format('D');
             foreach ($stocks as $stock) {
                 $dayEntry[$stock->product->name] = 0;
             }
@@ -63,17 +63,10 @@ class DashboardController extends Controller
                 }
             }
 
-            $data[] = $dayEntry; 
+           $weeklySalesData[] = $dayEntry; 
         }
 
-    
-
-        dd($data);
-
-
-
-
-
+        
 
         $totalCustomers = Customer::count();
         $todaySales = Sale::where('date', $today)->sum('total');
@@ -106,7 +99,7 @@ class DashboardController extends Controller
             'debtors' => $debtors,
             'targetAchievement' => $targetAchievement,
             'targetCustomers' => $targetCustomers,
-
+            'weeklySalesData' =>$weeklySalesData,
         ]);
     }
 }

@@ -21,7 +21,7 @@ class SummaryController extends Controller
                 return Carbon::parse($item->summary_date)->toDateString(); // group by date only
             });
 
-        // dd($summaries);
+        dd($summaries);
 
         return Inertia::render('Summary/Index', [
             'summariesByDate' => $summaries

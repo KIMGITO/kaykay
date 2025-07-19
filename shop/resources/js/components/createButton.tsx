@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 interface CreateButtonProps {
     toRoute: string,
     action: string
-}
+}    
 
 export default function CreateButton({toRoute, action}: CreateButtonProps) {
     return (

@@ -25,9 +25,9 @@ export default defineConfig({
     server: {
         host: '0.0.0.0', // 🔥 important
         port: 5175,
-        strictPort: true, // 💥 fail if port is used (optional)
+        strictPort: false, // 💥 fail if port is used (optional)
         hmr: {
-            host: 'localhost', // e.g. 192.168.187.151
+            host: '192.168.100.42', // e.g. 192.168.187.151
         },
     },
 });

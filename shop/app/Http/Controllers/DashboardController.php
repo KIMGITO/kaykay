@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Sale;
 use Inertia\Inertia;
+use App\Models\Stock;
+use App\Models\Summary;
 use App\Models\Customer;
+use App\Models\DailySummary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -12,7 +15,66 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $today  = Carbon::today();
+        $today  = Carbon::now();
+
+
+        // Get dashboard chart data from database
+        $from = Carbon::now()->subDays(6)->startOfDay();  // Include full first day
+        $to = Carbon::now()->endOfDay();                  // Include full current day
+
+        // Get summarized data grouped by date
+        $dailySummary = Summary::with(['stock.product'])
+            ->whereBetween('summary_date', [$from, $to])
+            ->orderBy('summary_date')
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->summary_date)->toDateString();
+            });
+
+        $chartDays = collect();
+        $currentDay = $from->copy(); // Create a copy to avoid modifying the original
+
+        while ($currentDay <= $to) {
+            $chartDays->push($currentDay->toDateString());
+            $currentDay->addDay();
+        }
+
+        $data = [];
+
+        $stocks = Stock::with(['product'])->get();
+      
+        foreach ($chartDays as $day) {
+            $dayEntry['day'] = $day;
+            foreach ($stocks as $stock) {
+                $dayEntry[$stock->product->name] = 0;
+            }
+
+            if (isset($dailySummary[$day])) {  
+                foreach ($dailySummary[$day] as $product) {
+                    // $dayEntry[] = $product->stock->product->name; 
+
+                    foreach($stocks as $stock ){
+                        if($product->stock_id == $stock->id){
+                            $dayEntry[$stock->product->name] = $product->stock_out;
+                        }
+                        
+                    }
+                    
+                }
+            }
+
+            $data[] = $dayEntry; 
+        }
+
+    
+
+        dd($data);
+
+
+
+
+
+
         $totalCustomers = Customer::count();
         $todaySales = Sale::where('date', $today)->sum('total');
         $dailyTarget = 5000;
@@ -31,7 +93,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Index', [
 
-          
+
             'totalCustomers' => $totalCustomers,
             'todaySales' => $todaySales,
             'dailyTarget' => $dailyTarget,
@@ -42,7 +104,7 @@ class DashboardController extends Controller
             'recentOrders' => $recentOrders,
             'totalDebts' => $totalDebts,
             'debtors' => $debtors,
-            'targetAchievement'=>$targetAchievement,
+            'targetAchievement' => $targetAchievement,
             'targetCustomers' => $targetCustomers,
 
         ]);

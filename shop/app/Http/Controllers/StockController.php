@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Stock;
-use App\Models\Summary;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Inertia\Inertia;
+use App\Models\Stock;
+use App\Models\Product;
+use App\Models\Summary;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 class StockController extends Controller
 {
@@ -116,8 +117,9 @@ class StockController extends Controller
         ]);
 
 
-        $stock->where('id', operator: $id)->incrementEach(['quantity_available'=> $validated['quantity'], 'quantity_received' => $validated['quantity']]);
-
+        $stock->where('id', operator: $id)->update(['date' => Carbon::now()]);
+        $stock->incrementEach(['quantity_available'=> $validated['quantity'], 'quantity_received' => $validated['quantity']]);
+        
 
         // update summary closing if available.
         $summaryData = [

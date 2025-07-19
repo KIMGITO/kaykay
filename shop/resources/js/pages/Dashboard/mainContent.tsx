@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { en } from 'zod/v4/locales';
 import { usePage } from '@inertiajs/react';
 import { CustomProgress } from '@/components/ui/customProgress';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 export default function DashboardMain({ data }) {
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -149,36 +150,40 @@ export default function DashboardMain({ data }) {
                             <CardTitle className="text-lg">Inventory Alerts</CardTitle>
                             <CardDescription>Items needing attention</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-3 p-4 flex">
-                            {inventoryStatus
-                                .filter((i) => i.status !== 'good')
-                                .map((item) => {
-                                    const statusColor = {
-                                        good: 'bg-green-500',
-                                        warning: 'bg-yellow-500',
-                                        critical: 'bg-red-500',
-                                    }[item.status];
+                        <ScrollArea className="min-w-full">
+                            <CardContent className="flex space-x-3 overflow-visible p-4">
+                                {inventoryStatus
+                                    // .filter((i) => i.status !== 'good')
+                                    .map((item) => {
+                                        const statusColor = {
+                                            good: 'bg-green-500',
+                                            warning: 'bg-yellow-500',
+                                            critical: 'bg-red-500',
+                                        }[item.status];
 
-                                    return (
-                                        <div key={item.id} className="space-y-1">
-                                            <div className="grid items-center text-sm">
-                                                <span className="font-medium">{item.item}</span>
-                                                <span
-                                                    className={`font-semibold ${statusColor === 'bg-red-500' ? 'text-red-600' : 'text-yellow-600'}`}
-                                                >
-                                                    {item.stock} {item.unit}
-                                                </span>
+                                        return (
+                                            <div key={item.id} className="min-w-1/2">
+                                                <div className="grid items-center text-sm">
+                                                    <span className="font-medium">{item.item}</span>
+                                                    <span
+                                                        className={`font-semibold ${statusColor === 'bg-red-500' ? 'text-red-600' : 'text-yellow-600'}`}
+                                                    >
+                                                        {item.stock} {item.unit}
+                                                    </span>
+                                                </div>
+                                                {/* <Progress value={item.stock} className="h-4" color={statusColor} /> */}
+                                                <CustomProgress value={item.stock} direction="vertical" className="rounded-0 w-15" />
+                                                <div className="grid text-xs text-muted-foreground">
+                                                    <span>Last restock: {item.lastRestock}</span>
+                                                    <span>{item.supplier}</span>
+                                                </div>
                                             </div>
-                                            {/* <Progress value={item.stock} className="h-4" color={statusColor} /> */}
-                                            <CustomProgress value={item.stock} direction='vertical' className="w-15 rounded-0"/>
-                                            <div className="grid text-xs text-muted-foreground">
-                                                <span>Last restock: {item.lastRestock}</span>
-                                                <span>{item.supplier}</span>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                        </CardContent>
+                                        );
+                                    })}
+                            </CardContent>
+                            <ScrollBar />
+                            <ScrollBar orientation="horizontal" hidden={ false} />
+                        </ScrollArea>
                     </Card>
                 </div>
             </div>

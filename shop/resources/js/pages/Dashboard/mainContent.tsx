@@ -175,7 +175,7 @@ export default function DashboardMain({ data }) {
                                                 <CustomProgress value={item.stock} direction="vertical" className="rounded-0 w-15" />
                                                 <div className="grid text-xs text-muted-foreground">
                                                     <span>Last restock: {item.lastRestock}</span>
-                                                    <span>{item.supplier}%</span>
+                                                    <span>{item.supplier}</span>
                                                 </div>
                                             </div>
                                         );
